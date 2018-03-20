@@ -1,4 +1,3 @@
-fun println s = print (s ^ "\n");
 val INT_MIN = ~1073741824;
 
 (* comparator *)
@@ -10,19 +9,19 @@ fun max x y = if x > y then x else y;
 fun cmp x y = if second x = second y then first x < first y else second x < second y;
 
 fun halve nil = (nil, nil)
- | halve [a] = ([a], nil)
- | halve (a::b::cs) =
- let
- val (x, y) = halve cs
- in
- (a::x, b::y)
- end;
+  | halve [a] = ([a], nil)
+  | halve (a::b::cs) =
+  let
+    val (x, y) = halve cs
+  in
+    (a::x, b::y)
+  end;
 
- fun merge (nil, ys) = ys
+fun merge (nil, ys) = ys
   | merge (xs, nil) = xs
   | merge (x::xs, y::ys) =
-  if cmp x y then x :: merge (xs, y::ys)
-  else y :: merge (x::xs, ys);
+    if cmp x y then x :: merge (xs, y::ys)
+    else y :: merge (x::xs, ys);
 
 
 fun mergeSort nil = nil
@@ -49,7 +48,7 @@ fun forsolcur (h :: t) N = forsol (h :: t) N (first h) INT_MIN
 
 fun parse file =
     let
-        fun next_int input =
+      fun next_int input =
 	    Option.valOf (TextIO.scanStream (Int.scan StringCvt.DEC) input)
         val stream = TextIO.openIn file
         val n = next_int stream
