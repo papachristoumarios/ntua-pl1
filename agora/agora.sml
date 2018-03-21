@@ -2,53 +2,10 @@ fun first (x, _) = x
 fun second (_, y) = y
 
 fun gcd a b = if a = 0 then b else gcd (b mod a) a;
-fun lcm a b = (a * b) div (gcd a b)
+fun lcm (a,b) = (a * b) div (gcd a b)
+fun min x y = if (x < y) then x else y;
 
-fun constructLevel [] = []
-  | constructLevel [a] = [a]
-  | constructLevel [a, b] = [lcm a b]
-  | constructLevel (a :: b :: t) = (lcm a b) :: (constructLevel t)
-
-fun constructSegmentList [] = [[]]
-  | constructSegmentList [a] = [[a]]
-  | constructSegmentList [a, b] = [[lcm a b]]
-  | constructSegmentList l =
-    let
-      val tmp = constructLevel l;
-    in
-      tmp :: [(constructLevel tmp)]
-    end;
-
-fun mergeSegmentList [[]] = []
-   | mergeSegmentList [[a]] = [a]
-   | mergeSegmentList (h :: t) = (mergeSegmentList t) @ h
-
-fun segmentTree [] = Array.fromList []
-  | segmentTree [a] = Array.fromList [a]
-  | segmentTree l =
-  let
-    val ll = mergeSegmentList (constructSegmentList l);
-  in
-    Array.fromList (0 :: (ll @ l))
-  end;
-
-
-fun query tree node start eend l r =
-  if (eend < l orelse start > r) then 1
-  else if (l <= start andalso r >= eend) then Array.sub(tree, node)
-  else
-    let
-      val mid = (start + eend) div 2;
-      val x = 2 * node;
-      val y = x + 1;
-      val z = mid + 1;
-    in
-      lcm ( query tree x start mid l r ) ( query tree y z eend l r )
-    end
-
-
-
-
+(* read the input file *)
 fun parse file =
     let
       fun next_int input =
@@ -67,42 +24,49 @@ fun parse file =
         (n, rev(scanner n []))
     end;
 
-fun getTmp s N i =
-  if ( i = 0 ) then query s 1 1 (N - 1) 1 (N - 1)
-  else if ( i = N - 1) then query s 1 1 (N - 1) 0 (N - 2)
+(* generate lcm prefix array *)
+fun prefixLcm l =
+  let
+    fun prefixLcm' (sums, []) = sums
+      | prefixLcm' ([], x::xs) = prefixLcm' ([x],xs)
+      | prefixLcm' (y::ys, x::xs) = prefixLcm' ( ( lcm (x, y) ) ::y::ys,xs);
+  in
+    prefixLcm' ([], l)
+  end;
+
+(* reverse a list taken from course notes *)
+fun reverse xs =
+  let
+    fun rev (nil, z) = z
+      | rev (y::ys, z) = rev (ys, y::z)
+  in
+    rev (xs, nil)
+  end;
+
+(* solution functino that computes the optimal solution from the two arrays *)
+fun solution left_lcm right_lcm opt min_index i N =
+  if (i > N) then (opt, min_index)
   else
     let
-      val ll = query s 1 1 (N - 1) 0 (i - 1);
-      val rr = query s 1 1 (N - 1) (i + 1) (N - 1);
+      val l = Array.sub (left_lcm, i - 1);
+      val r = Array.sub (right_lcm, i + 1);
+      val tmp = lcm (l,r);
+      val result = if (tmp < opt) then (tmp, i) else (opt, min_index)
     in
-      lcm ll rr
+      solution left_lcm right_lcm (first result) (second result) (i+1) N
     end
 
-fun forsol tree N n minimum min_index =
-  if (n < 0) then (minimum, min_index)
-  else
-    let
-      val tmp = getTmp tree N n;
-      val qq = n - 1;
-      val (a, b) =  if (tmp < minimum) then forsol tree N qq tmp n
-      else forsol tree N qq minimum min_index;
-    in
-      (a, b)
-    end
-
+(* total solution *)
 fun agora fileName =
-let
-  val pp = parse fileName;
-  val N = first pp;
-  val NN = N - 1;
-  val l = second pp;
-  val s = segmentTree l;
-  val x0 = query s 1 NN 0 NN;
-in
-  forsol s N NN x0 ~1
-end;
-
-
-val l = [1,2,3,4];
-val NN = length l;
-val s = segmentTree l;
+  let
+    val pp = parse fileName;
+    val N = first pp;
+    val a = 1 :: (second pp) @ [1];
+    val left_lcm = Array.fromList ( reverse ( prefixLcm a ) );
+    val right_lcm =Array.fromList ( prefixLcm ( reverse a ) );
+    val opt = Array.sub( left_lcm, N);
+    val (opt, min_index) = solution left_lcm right_lcm opt ~1 1 N;
+    val min_index = if min_index = ~1 then 0 else min_index
+  in
+    print ( (Int.toString opt) ^ " " ^ ( Int.toString min_index ) ^ "\n")
+  end;

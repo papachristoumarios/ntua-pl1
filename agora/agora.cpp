@@ -1,11 +1,9 @@
-// LCM of given range queries using Segment Tree
-// taken from https://www.geeksforgeeks.org/range-lcm-queries/
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <cstdio>
 using namespace std;
-
-#define MAX 1000000
-int tree[4*MAX];
-vector<int> arr;
+vector<int> a;
+int N, x;
 
 int gcd(int a, int b)
 {
@@ -13,79 +11,51 @@ int gcd(int a, int b)
     else return gcd(b%a, a);
 }
 
-int lcm(int a, int b) { return (a * b) /gcd(a,b); }
+int lcm(int a, int b) { return (a * b) / gcd(a,b); }
 
-void build(int node, int start, int end)
-{
-    if (start==end)
-    {
-        tree[node] = arr[start];
-        return;
-    }
-
-    int mid = (start+end)/2;
-
-    build(2*node, start, mid);
-    build(2*node+1, mid+1, end);
-
-    int left_lcm = tree[2*node];
-    int right_lcm = tree[2*node+1];
-
-    tree[node] = lcm(left_lcm, right_lcm);
+void printvec(vector<int> &v) {
+  for (unsigned int i = 0; i < v.size(); i++) cout << v[i] << " ";
+  cout << endl;
 }
 
-int query(int node, int start, int end, int l, int r)
-{
-    if (end<l || start>r)
-        return 1;
-
-    if (l<=start && r>=end)
-        return tree[node];
-
-    int mid = (start+end)/2;
-    int left_lcm = query(2*node, start, mid, l, r);
-    int right_lcm = query(2*node+1, mid+1, end, l, r);
-    return lcm(left_lcm, right_lcm);
-}
-
-int main()
-{
-    int N, x, l, r;
-    cin >> N;
+int main(int argc, char **argv) {
+  FILE *fptr = fopen(argv[1], "r");
+  a.push_back(1);
+  if (fptr) {
+    fscanf(fptr, "%d", &N);
     for (int i = 0; i < N; i++) {
-      cin >> x;
-      arr.push_back(x);
+      fscanf(fptr, "%d", &x);
+      a.push_back( x );
     }
-    build(1, 0, N - 1);
+  }
+  a.push_back(1);
 
-    int minimum = query (1, 0, N - 1, 0, N - 1);
-    int min_index = -1;
-    int tmp;
+  vector<int> left_lcm( N + 2,  1);
+  vector<int> right_lcm( N + 2, 1);
 
-    for (int i = 0; i < N; i++) {
-      if (i == 0) {
-        tmp = query (1, 0, N-1, 1, N - 1);
-      }
-      else if (i == N - 1)  {
-        tmp = query (1, 0, N-1, 0, N - 2);
-      }
-      else {
-        l = query(1, 0, N-1, 0, i - 1);
-        r = query(1, 0, N -1, i + 1, N - 1);
-        tmp = lcm (l, r);
-      }
+  for ( int i = 1; i <= N + 1; i++) {
+    left_lcm[i] = lcm(left_lcm[i-1], a[i]);
+  }
 
-      if ( tmp < minimum ) {
-        minimum = tmp;
-        min_index = i;
-      }
+  for (int i = N; i >= 0; i--) {
+    right_lcm[i] = lcm(right_lcm[i + 1], a[i]);
+  }
+
+  int min_index = -1;
+  int minimum = left_lcm[N];
+  int tmp;
+
+  printvec(a);
+  printvec(left_lcm);
+  printvec(right_lcm);
+
+  for ( int i = 1; i <= N; i ++ ) {
+    tmp = lcm ( left_lcm [ i-1 ] , right_lcm [ i+1 ]);
+    if (tmp < minimum) {
+      minimum = tmp;
+      min_index = i;
     }
+  }
 
-    cout << minimum << " " << (min_index == -1 ?  0 : min_index + 1) << endl;
-
-    for (int i = 1; i < (1 << (N - 1)); i++) {
-      cout << tree[i] << endl;
-    }
-
-    return 0;
+  cout << minimum << " " << ( min_index == -1 ? 0 : min_index) << endl;
 }
