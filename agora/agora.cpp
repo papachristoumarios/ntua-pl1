@@ -45,10 +45,6 @@ int main(int argc, char **argv) {
   int minimum = left_lcm[N];
   int tmp;
 
-  printvec(a);
-  printvec(left_lcm);
-  printvec(right_lcm);
-
   for ( int i = 1; i <= N; i ++ ) {
     tmp = lcm ( left_lcm [ i-1 ] , right_lcm [ i+1 ]);
     if (tmp < minimum) {
@@ -57,5 +53,5 @@ int main(int argc, char **argv) {
     }
   }
 
-  cout << minimum << " " << ( min_index == -1 ? 0 : min_index) << endl;
+  cout << minimum << " " << ( min_index + 1 ) << endl;
 }
