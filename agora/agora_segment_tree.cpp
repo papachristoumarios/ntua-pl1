@@ -1,6 +1,8 @@
 // LCM of given range queries using Segment Tree
 // taken from https://www.geeksforgeeks.org/range-lcm-queries/
-#include <bits/stdc++.h>
+#include <vector>
+#include <cstdio>
+#include <iostream>
 using namespace std;
 
 #define MAX 1000000
@@ -13,7 +15,7 @@ int gcd(int a, int b)
     else return gcd(b%a, a);
 }
 
-int lcm(int a, int b) { return (a * b) /gcd(a,b); }
+int lcm(int a, int b) { return (a * b) / gcd(a,b); }
 
 void build(int node, int start, int end)
 {
@@ -48,14 +50,19 @@ int query(int node, int start, int end, int l, int r)
     return lcm(left_lcm, right_lcm);
 }
 
-int main()
+int main(int argc, char **argv)
 {
     int N, x, l, r;
-    cin >> N;
-    for (int i = 0; i < N; i++) {
-      cin >> x;
-      arr.push_back(x);
+    FILE *fptr = fopen(argv[1], "r");
+    if (fptr) {
+      fscanf(fptr, "%d", &N);
+      for (int i = 0; i < N; i++) {
+        fscanf(fptr, "%d", &x);
+        arr.push_back( x );
+      }
     }
+
+
     build(1, 0, N - 1);
 
     int minimum = query (1, 0, N - 1, 0, N - 1);
@@ -81,11 +88,8 @@ int main()
       }
     }
 
-    cout << minimum << " " << (min_index == -1 ?  0 : min_index + 1) << endl;
+    cout << minimum << " " << (min_index + 1) << endl;
 
-    for (int i = 1; i < (1 << (N - 1)); i++) {
-      cout << tree[i] << endl;
-    }
 
     return 0;
 }

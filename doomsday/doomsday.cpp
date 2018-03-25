@@ -1,10 +1,12 @@
 #include <iostream>
+#include <string>
 #include <queue>
 #include <vector>
 #include <algorithm>
 #include <climits>
 #include <map>
 #include <utility>
+#include <fstream>
 using namespace std;
 #define MAXN 1000
 #define pb push_back
@@ -12,8 +14,9 @@ typedef pair< int, int > pii;
 char grid[MAXN + 2][MAXN + 2];
 int depth[MAXN + 2][MAXN + 2];
 using namespace std;
-vector<pii> special;
+queue<pii> q;
 int N, M;
+vector<pii> mut;
 
 void printGrid() {
   for (int i = 1; i <= N; i++) {
@@ -36,32 +39,30 @@ void printDepth() {
 vector<pii> getNeighbors(pii p) {
   vector<pii> result;
   int u = p.first; int v = p.second;
-  if (grid[ u-1 ][v] != 'x') result.pb( make_pair ( u-1, v ));
-  if (grid[ u ][v-1] != 'x') result.pb(make_pair ( u, v-1 ));
-  if (grid[u+1] [v] != 'x') result.pb(make_pair ( u+1, v ));
-  if (grid[u][v+1] != 'x') result.pb(make_pair ( u, v+1 ));
+  if (grid[ u-1 ][v] != 'X') result.pb( make_pair ( u-1, v ));
+  if (grid[ u ][v-1] != 'X') result.pb(make_pair ( u, v-1 ));
+  if (grid[u+1] [v] != 'X') result.pb(make_pair ( u+1, v ));
+  if (grid[u][v+1] != 'X') result.pb(make_pair ( u, v+1 ));
   return result;
+}
+
+bool kaboom(int u, int v, int i, int j) {
+  return ((
+    (grid[u][v] == '+' && grid[i][j] == '-') ||
+    (grid[u][v] == '-' && grid[i][j] == '+'))
+
+  );
 }
 
 int bfs() {
   // initialize bfs
   int u, v, i, j;
-  queue<pii> q;
-
-  // add starting points to queue
-  for (pii p : special) {
-    u = p.first;
-    v = p.second;
-    depth[u][v] = 0;
-    q.push(p);
-  }
 
   int opt = INT_MAX;
   printDepth();
   // traverse graph
   while (!q.empty()) {
 
-    if (opt != INT_MAX) return opt;
     cout << "Step" << endl;
     printGrid();
     printDepth();
@@ -81,46 +82,81 @@ int bfs() {
 
       // if cell is not visited and not an X
 
-      if (depth[i][j] == -1 && grid[i][j] != 'x') {
-        grid[i][j] = grid[u][v];
+      if (depth[i][j] == -1 && (grid[i][j] != 'X' && grid[i][j] != '*')) {
+        if ( grid[u][v] != '*') grid[i][j] = grid[u][v];
         depth[i][j] = depth[u][v] + 1;
         q.push( qq );
       }
 
       // if someone has visited before that is a + or a -
       else if (depth[i][j] > 0 && grid[i][j] == grid[u][v]) continue;
-      else if (depth[i][j] > 0 && grid[i][j] != grid[u][v]) {
-          cout << "kaboom" << endl;
-          depth[i][j] = depth[u][v] + 1;
-          opt = min ( opt, depth[i][j] ); // the child has been visited earlier
-          grid[i][j] = '*';
+      else if (depth[i][j] > 0 && kaboom(u,v,i,j)) {
+        cout << "kaboom" << endl;
+        depth[i][j] = depth[u][v] + 1;
+        opt = min ( opt, depth[i][j] ); // the child has been visited earlier
+        grid[i][j] = '*';
+        // mut.pb ( make_pair (i, j));
       }
 
     }
 
 
   }
+
+  for (pii xx : mut) {
+    i = xx.first; j = xx.second;
+    grid[i][j] = '*';
+  }
+
+
   return opt;
 }
 
 
-int main(void) {
 
-  // read input
-  cin >> N >> M;
-  for (int i = 1; i <= N; i++)
-    for (int j = 1; j <= M; j++) {
-      cin >> grid[i][j];
-      depth[i][j] = -1; // mark not visited
-      // sources for bfs
-      if (grid[i][j] == '+' || grid[i][j] == '-') special.pb ( make_pair ( i, j ));
-    }
 
-    for (int i = 0; i < N; i++) { grid[i][0] = 'x'; grid[i][N + 1] = 'x'; }
-    for (int i = 0; i < M; i++) { grid[0][i] = 'x'; grid[M + 1][i] = 'x'; }
+int main(int argc, char **argv) {
 
-    int opt = bfs();
-    cout << opt << endl;
-    printGrid();
+  ifstream myReadFile;
+
+  myReadFile.open(argv[1]);
+  string output;
+  N = 0;
+  M = 0;
+  if (myReadFile.is_open()) {
+  while (!myReadFile.eof()) {
+
+     myReadFile >> output;
+     if (N == 0) M = (int) output.size();
+     N++;
+     for (int j = 1; j <= M; j++) {
+       grid[N][j] = output[j - 1];
+       if (grid[N][j] == '+' || grid[N][j] == '-') {
+         q.push ( make_pair (N, j));
+         depth[N][j] = 0;
+       }
+       else depth[N][j] = -1;
+     }
+  }
+ }
+ N--;
+ myReadFile.close();
+ cout << N << endl;
+ cout << M << endl;
+
+  printGrid();
+
+  for (int i = 0; i < N; i++) { grid[i][0] = 'X'; grid[i][M + 1] = 'X'; }
+  for (int i = 0; i < M; i++) { grid[0][i] = 'X'; grid[N + 1][i] = 'X'; }
+
+  cout << "initial grid" << endl;
+  printGrid();
+
+  int opt = bfs();
+  if (opt == INT_MAX) {
+    cout << "the world is saved" << endl;
+  } else cout << opt << endl;
+
+  printGrid();
 
 }
