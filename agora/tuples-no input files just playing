@@ -1,0 +1,129 @@
+// C++ program to find prime factorization of a
+// number n in O(Log n) time with precomputation
+// allowed.
+#include "bits/stdc++.h"
+#include <climits>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <tuple>
+using namespace std;
+ 
+#define MAXN   100000001
+ 
+// stores smallest prime factor for every number
+int spf[MAXN];
+ 
+// Calculating SPF (Smallest Prime Factor) for every
+// number till MAXN.
+// Time Complexity : O(nloglogn)
+void sieve(int ll)
+{
+    spf[1] = 1;
+    for (int i=2; i<ll; i++)
+ 
+        // marking smallest prime factor for every
+        // number to be itself.
+        spf[i] = i;
+ 
+    // separately marking spf for every even
+    // number as 2
+    for (int i=4; i<ll; i+=2)
+        spf[i] = 2;
+ 
+    for (int i=3; i*i<ll; i++)
+    {
+        // checking if i is prime
+        if (spf[i] == i)
+        {
+            // marking SPF for all numbers divisible by i
+            for (int j=i*i; j<ll; j+=i)
+ 
+                // marking spf[j] if it is not 
+                // previously marked
+                if (spf[j]==j)
+                    spf[j] = i;
+        }
+    }
+}
+ 
+// A O(log n) function returning primefactorization
+// by dividing by smallest prime factor at every step
+vector<int> getFactorization(int x)
+{
+    vector<int> ret;
+    while (x != 1)
+    {
+        ret.push_back(spf[x]);
+        x = x / spf[x];
+    }
+    return ret;
+}
+
+
+
+// driver program for above function
+typedef tuple<int,int,int> tl;
+int main()
+{
+
+    vector< tl > v;
+    
+    int x[8] = {2, 5, 6, 7, 8, 9, 10,11};
+    int *mn=max_element(begin(x),end(x));
+    int ll=(*mn);
+    int kk=powf(10.0f, floorf(log10f(ll)))*10+1;
+
+// precalculating Smallest Prime Factor
+    sieve(int(kk));
+	
+    for (int j=0; j<sizeof(x)/sizeof(*x); j++){
+ 	int sum;
+    // calling getFactorization function
+    	vector <int> p = getFactorization(x[j]);
+	sum=p[0];
+ 	
+    	for (int i=1; i<p.size()+1; i++){
+		if(p[i]==p[i-1]){
+			sum=p[i]*sum;			
+			}	
+		else{
+	
+			v.push_back(tl(sum,p[i-1],j));
+			sum=p[i];
+			
+			}
+	
+    }	
+    
+}
+
+sort(v.begin(),v.end());
+
+
+int kl=get<2>(v[v.size()-1]);
+long long int pl = 1, flag = 0;
+for (tuple<int, int,int> &tup : v){
+//                   ^here
+    			if (get<2>(tup) == kl){
+        		get<1>(tup) = 0;
+    			}
+		}
+
+for (int i=v.size()-2; i>=0; i--){
+	int c=get<1>(v[i]); //factor
+	if(c!=0){
+		pl = pl * (get<0>(v[i]));
+		//cout<<pl<<'\n';
+		for (tuple<int, int,int> &tup : v){
+//                   ^here
+    			if (get<1>(tup) == c){
+        		get<1>(tup) = 0;
+    			}
+		}
+		
+	}
+}
+cout<<pl<<' '<<get<2>(v[v.size()-1])+1<<'\n';;
+    return 0;
+}
