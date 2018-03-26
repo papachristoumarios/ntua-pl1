@@ -90,7 +90,7 @@ int bfs() {
 
       // if someone has visited before that is a + or a -
       else if (depth[i][j] > 0 && grid[i][j] == grid[u][v]) continue;
-      else if (depth[i][j] > 0 && kaboom(u,v,i,j)) {
+      else if (depth[i][j] > 0 && abs(depth[i][j] - depth[u][v] - 1) <= 1) {
         cout << "kaboom" << endl;
         depth[i][j] = depth[u][v] + 1;
         opt = min ( opt, depth[i][j] ); // the child has been visited earlier
@@ -103,10 +103,6 @@ int bfs() {
 
   }
 
-  for (pii xx : mut) {
-    i = xx.first; j = xx.second;
-    grid[i][j] = '*';
-  }
 
 
   return opt;
