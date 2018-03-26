@@ -27,6 +27,7 @@ vector < tl > Neighbors(tl k){
 
 int M; 
 int N;
+//taken from Marios Papachristou 
 void printGrid() {
   for (int i = 1; i <= N; i++) {
     for (int j = 1; j <= M; j++) {
@@ -54,11 +55,11 @@ int solution(){
 	vector < tl > ne;
 	while(flag==1 && flag1==1){	
 		printGrid();
-		
+		flag1=0;
 		for (int i=1; i<=N; i++){
 			for (int j=1; j<=M; j++){
 				tl k=tl(i,j);
-				flag1=0;
+				
 				if((grid[i][j]=='+' || grid[i][j]=='-') && depth[i][j]==time){
 					flag1=1;				
 					vector<tl> neig=Neighbors(k);
@@ -72,7 +73,7 @@ int solution(){
 						}
 						else if (grid[a][b]==grid[i][j]) continue;
 						else if ((grid[i][j]=='+' || grid[i][j]=='-') && (grid[a][b]=='+' || grid[a][b]=='-') && grid[a][b]!=grid[i][j]){
-						  ne.push_back(tl(a,b));						
+							ne.push_back(tl(a,b));	
 							flag=0;
 						}
 					}
@@ -84,6 +85,7 @@ int solution(){
 		time=time+1;
 	}
 	if (flag==0){
+
 		for (int i=0; i<ne.size(); i++){
 			int a=get<0>(ne[i]);
 			int b=get<1>(ne[i]);
@@ -91,6 +93,7 @@ int solution(){
 		}
 		cout<<"kaboom"<<'\n';
 	}
+	
 	return time;
 }
 
@@ -107,8 +110,8 @@ for (int i = 1; i <= N; i++){
 
 
 
-for (int i = 0; i < N; i++) { grid[i][0] = 'x'; grid[i][N + 1] = 'x'; }
-for (int i = 0; i < M; i++) { grid[0][i] = 'x'; grid[M + 1][i] = 'x'; }
+for (int i = 0; i <= M+1; i++) { grid[i][0] = 'x'; grid[i][M + 1] = 'x'; }
+for (int i = 0; i <= N+1; i++) { grid[0][i] = 'x'; grid[N + 1][i] = 'x'; }
 
 int time=solution();
 cout<<time<<'\n';
