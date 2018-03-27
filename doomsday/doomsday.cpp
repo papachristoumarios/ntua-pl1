@@ -137,9 +137,7 @@ int main(int argc, char **argv) {
  }
  N--;
  myReadFile.close();
- cout << N << endl;
- cout << M << endl;
-
+ 
   printGrid();
 
   for (int i = 0; i < N; i++) { grid[i][0] = 'X'; grid[i][M + 1] = 'X'; }

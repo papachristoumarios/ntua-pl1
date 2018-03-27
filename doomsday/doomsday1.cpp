@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <climits>
@@ -16,7 +17,7 @@ vector< tl > v;
 
 vector < tl > Neighbors(tl k){
 	vector < tl > neig;
-	int a=get<0>(k); 
+	int a=get<0>(k);
 	int b=get<1>(k);
 	if (grid[a-1][b] != 'x') neig.push_back(tl(a-1,b));
 	if (grid[a][b-1] != 'x') neig.push_back(tl(a,b-1));
@@ -25,9 +26,9 @@ vector < tl > Neighbors(tl k){
 	return neig;
 }
 
-int M; 
+int M;
 int N;
-//taken from Marios Papachristou 
+//taken from Marios Papachristou
 void printGrid() {
   for (int i = 1; i <= N; i++) {
     for (int j = 1; j <= M; j++) {
@@ -43,7 +44,7 @@ bool safe() {
     for (int j = 1; j <= M; j++) {
       if(grid[i][j]=='*'){return false;}
     }
-    
+
   }
 return true;
 }
@@ -53,15 +54,15 @@ int solution(){
 	int time=0;
 	int flag=1; int flag1=1;
 	vector < tl > ne;
-	while(flag==1 && flag1==1){	
+	while(flag==1 && flag1==1){
 		printGrid();
 		flag1=0;
 		for (int i=1; i<=N; i++){
 			for (int j=1; j<=M; j++){
 				tl k=tl(i,j);
-				
+
 				if((grid[i][j]=='+' || grid[i][j]=='-') && depth[i][j]==time){
-					flag1=1;				
+					flag1=1;
 					vector<tl> neig=Neighbors(k);
 					for (tl kl:neig){
 						int a=get<0>(kl);
@@ -69,17 +70,17 @@ int solution(){
 						if(grid[a][b]!='x' && grid[a][b]=='.'){
 								grid[a][b]=grid[i][j];
 								depth[a][b]=time+1;
-		
+
 						}
 						else if (grid[a][b]==grid[i][j]) continue;
 						else if ((grid[i][j]=='+' || grid[i][j]=='-') && (grid[a][b]=='+' || grid[a][b]=='-') && grid[a][b]!=grid[i][j]){
-							ne.push_back(tl(a,b));	
+							ne.push_back(tl(a,b));
 							flag=0;
 						}
 					}
-		
+
 				}
-			
+
 			}
 		}
 		time=time+1;
@@ -93,20 +94,34 @@ int solution(){
 		}
 		cout<<"kaboom"<<'\n';
 	}
-	
+
 	return time;
 }
 
 
 
-int main(){
-cin >> N >> M;
-for (int i = 1; i <= N; i++){
-	for (int j = 1; j <= M; j++) {
-      		cin >> grid[i][j];
-		depth[i][j]=0;
-	}
-}
+int main(int argc, char **argv) {
+
+	  ifstream myReadFile;
+
+	  myReadFile.open(argv[1]);
+	  string output;
+	  N = 0;
+	  M = 0;
+	  if (myReadFile.is_open()) {
+	  while (!myReadFile.eof()) {
+
+	     myReadFile >> output;
+	     if (N == 0) M = (int) output.size();
+	     N++;
+	     for (int j = 1; j <= M; j++) {
+	       grid[N][j] = output[j - 1];
+	       depth[N][j] = 0;
+	    }
+	  }
+	 }
+	 N--;
+	 myReadFile.close();
 
 
 
