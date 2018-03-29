@@ -15,6 +15,7 @@ char grid[MAXN + 2][MAXN + 2];
 int depth[MAXN + 2][MAXN + 2];
 using namespace std;
 queue<pii> q;
+map<pii, pii> parent;
 int N, M;
 vector<pii> mut;
 
@@ -68,7 +69,6 @@ int bfs() {
     printDepth();
     cout << endl;
 
-
     pii p = q.front();
     q.pop();
     u = p.first;
@@ -80,23 +80,20 @@ int bfs() {
 
       cout << "Neighbors of " << u << " " << v << " is " << i << " " << j << endl;
 
-      // if cell is not visited and not an X
+      if (opt < INT_MAX && depth[i][j] > opt) return opt;
 
-      if (depth[i][j] == -1 && (grid[i][j] != 'X' && grid[i][j] != '*')) {
-        if ( grid[u][v] != '*') grid[i][j] = grid[u][v];
-        depth[i][j] = depth[u][v] + 1;
-        q.push( qq );
-      }
-
-      // if someone has visited before that is a + or a -
-      else if (depth[i][j] > 0 && grid[i][j] == grid[u][v]) continue;
-      else if (depth[i][j] > 0 && abs(depth[i][j] - depth[u][v] - 1) <= 1) {
-        cout << "kaboom" << endl;
-        depth[i][j] = depth[u][v] + 1;
-        opt = min ( opt, depth[i][j] ); // the child has been visited earlier
+      if (kaboom(u,v,i,j)) {
+        opt = min(opt, depth[u][v] + 1);
         grid[i][j] = '*';
-        // mut.pb ( make_pair (i, j));
       }
+      else {
+        depth[i][j] = depth[u][v] + 1;
+        grid[i][j] = grid[u][v];
+        q.push ( qq );
+      }
+
+
+
 
     }
 
@@ -137,7 +134,7 @@ int main(int argc, char **argv) {
  }
  N--;
  myReadFile.close();
- 
+
   printGrid();
 
   for (int i = 0; i < N; i++) { grid[i][0] = 'X'; grid[i][M + 1] = 'X'; }
