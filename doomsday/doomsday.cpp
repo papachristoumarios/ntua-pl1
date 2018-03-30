@@ -40,10 +40,10 @@ void printDepth() {
 vector<pii> getNeighbors(pii p) {
   vector<pii> result;
   int u = p.first; int v = p.second;
-  if (grid[ u-1 ][v] != 'X') result.pb( make_pair ( u-1, v ));
-  if (grid[ u ][v-1] != 'X') result.pb(make_pair ( u, v-1 ));
-  if (grid[u+1] [v] != 'X') result.pb(make_pair ( u+1, v ));
-  if (grid[u][v+1] != 'X') result.pb(make_pair ( u, v+1 ));
+  if (u > 0 && grid[ u-1 ][v] != 'X') result.pb( make_pair ( u-1, v ));
+  if (v > 0 && grid[ u ][v-1] != 'X') result.pb(make_pair ( u, v-1 ));
+  if (u <= N && grid[u+1] [v] != 'X') result.pb(make_pair ( u+1, v ));
+  if (v <= M && grid[u][v+1] != 'X') result.pb(make_pair ( u, v+1 ));
   return result;
 }
 
@@ -60,7 +60,7 @@ int bfs() {
   int u, v, i, j;
 
   int opt = INT_MAX;
-  printDepth();
+  // printDepth();
   // traverse graph
   while (!q.empty()) {
 
@@ -81,12 +81,11 @@ int bfs() {
       cout << "Neighbors of " << u << " " << v << " is " << i << " " << j << endl;
 
       if (opt < INT_MAX && depth[i][j] > opt) return opt;
-
-      if (kaboom(u,v,i,j)) {
+      else if (kaboom(u,v,i,j)) {
         opt = min(opt, depth[u][v] + 1);
         grid[i][j] = '*';
       }
-      else {
+      else if (grid[u][v] != 'X' && depth[i][j] == -1){
         depth[i][j] = depth[u][v] + 1;
         grid[i][j] = grid[u][v];
         q.push ( qq );
@@ -135,13 +134,9 @@ int main(int argc, char **argv) {
  N--;
  myReadFile.close();
 
-  printGrid();
-
   for (int i = 0; i < N; i++) { grid[i][0] = 'X'; grid[i][M + 1] = 'X'; }
   for (int i = 0; i < M; i++) { grid[0][i] = 'X'; grid[N + 1][i] = 'X'; }
 
-  cout << "initial grid" << endl;
-  printGrid();
 
   int opt = bfs();
   if (opt == INT_MAX) {

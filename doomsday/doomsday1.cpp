@@ -55,7 +55,7 @@ int solution(){
 	int flag=1; int flag1=1;
 	vector < tl > ne;
 	while(flag==1 && flag1==1){
-		printGrid();
+		// printGrid();
 		flag1=0;
 		for (int i=1; i<=N; i++){
 			for (int j=1; j<=M; j++){
@@ -87,12 +87,12 @@ int solution(){
 	}
 	if (flag==0){
 
-		for (int i=0; i<ne.size(); i++){
+		for (unsigned int i=0; i<ne.size(); i++){
 			int a=get<0>(ne[i]);
 			int b=get<1>(ne[i]);
 			grid[a][b]='*';
 		}
-		cout<<"kaboom"<<'\n';
+		// scout<<"kaboom"<<'\n';
 	}
 
 	return time;
@@ -129,9 +129,8 @@ for (int i = 0; i <= M+1; i++) { grid[i][0] = 'x'; grid[i][M + 1] = 'x'; }
 for (int i = 0; i <= N+1; i++) { grid[0][i] = 'x'; grid[N + 1][i] = 'x'; }
 
 int time=solution();
-cout<<time<<'\n';
 if(safe()){
-	cout<<"the world is safe"<<'\n';
-}
+	cout<<"the world is saved"<<'\n';
+} else cout<<time<<'\n';
 printGrid();
 }
