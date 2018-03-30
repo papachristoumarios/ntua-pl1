@@ -85,9 +85,9 @@ int bfs() {
         opt = min(opt, depth[u][v] + 1);
         grid[i][j] = '*';
       }
-      else if (grid[u][v] != 'X' && depth[i][j] == -1){
+      else if ((grid[u][v] != 'X' && depth[i][j] == -1) || (grid[i][j] = '+' || grid[i][j] == '-') ) {
         depth[i][j] = depth[u][v] + 1;
-        grid[i][j] = grid[u][v];
+        if (grid[u][v] != 'X') grid[i][j] = grid[u][v];
         q.push ( qq );
       }
 
