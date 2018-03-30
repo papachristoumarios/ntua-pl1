@@ -39,17 +39,8 @@ void printGrid() {
 }
 
 
-bool safe() {
-  for (int i = 1; i <= N; i++) {
-    for (int j = 1; j <= M; j++) {
-      if(grid[i][j]=='*'){return false;}
-    }
 
-  }
-return true;
-}
-
-int solution(){
+int solution(bool& safe){
 
 	int time=0;
 	int flag=1; int flag1=1;
@@ -91,6 +82,7 @@ int solution(){
 			int a=get<0>(ne[i]);
 			int b=get<1>(ne[i]);
 			grid[a][b]='*';
+			safe = false;
 		}
 		// scout<<"kaboom"<<'\n';
 	}
@@ -103,7 +95,7 @@ int solution(){
 int main(int argc, char **argv) {
 
 	  ifstream myReadFile;
-
+		bool safe = true;
 	  myReadFile.open(argv[1]);
 	  string output;
 	  N = 0;
@@ -128,8 +120,8 @@ int main(int argc, char **argv) {
 for (int i = 0; i <= M+1; i++) { grid[i][0] = 'x'; grid[i][M + 1] = 'x'; }
 for (int i = 0; i <= N+1; i++) { grid[0][i] = 'x'; grid[N + 1][i] = 'x'; }
 
-int time=solution();
-if(safe()){
+int time=solution(safe);
+if(safe){
 	cout<<"the world is saved"<<'\n';
 } else cout<<time<<'\n';
 printGrid();
