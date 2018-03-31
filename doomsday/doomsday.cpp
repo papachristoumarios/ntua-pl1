@@ -12,7 +12,8 @@ using namespace std;
 #define pb push_back
 typedef pair< int, int > pii;
 char grid[MAXN + 2][MAXN + 2];
-int depth[MAXN + 2][MAXN + 2];
+int matter[MAXN + 2][MAXN + 2];
+int anti_matter[MAXN + 2][MAXN + 2];
 using namespace std;
 queue<pii> q;
 map<pii, pii> parent;
@@ -29,12 +30,23 @@ void printGrid() {
 }
 
 void printDepth() {
+  cout << "matter " << endl;
   for (int i = 1; i <= N; i++) {
     for (int j = 1; j <= M; j++) {
-      cout << depth[i][j] << " ";
+      cout << matter[i][j] << " ";
     }
     cout << endl;
   }
+
+  cout << endl << "antimatter" << endl;
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= M; j++) {
+      cout << anti_matter[i][j] << " ";
+    }
+    cout << endl;
+  }
+
+
 }
 
 vector<pii> getNeighbors(pii p) {
@@ -55,70 +67,45 @@ bool kaboom(int u, int v, int i, int j) {
   );
 }
 
-int bfs() {
+int bfs(queue<pii> &q, bool mt) {
   // initialize bfs
   int u, v, i, j;
-
   int opt = INT_MAX;
-  queue<pii> stars;
 
   while (!q.empty()) {
-
-    cout << "Step" << endl;
-    printGrid();
-    printDepth();
-    cout << endl;
 
     pii p = q.front();
     q.pop();
     u = p.first;
     v = p.second;
     vector<pii> neigh = getNeighbors(p);
-
-    if (depth[u][v] == opt) continue;
-    if (depth[u][v] > opt) goto mutate;
-
     for (pii qq : neigh) {
       i = qq.first;
       j = qq.second;
 
-      cout << "Neighbors of " << u << " " << v << " is " << i << " " << j << endl;
-
-      if (grid[u][v] == grid[i][j]) continue;
-      else if (grid[i][j] == '.') {
-        depth[i][j] = depth[u][v] + 1;
-        grid[i][j] = grid[u][v];
+      if (mt && matter[i][j] == -1) {
+        matter[i][j] = matter[u][v] + 1;
+        if (anti_matter[i][j] != -1) opt = min (opt, matter[i][j]);
+        q.push (qq);
+      }
+      if (!mt && anti_matter[i][j] == -1) {
+        anti_matter[i][j] = anti_matter[u][v] + 1;
+        if (matter[i][j] != -1) opt = min (opt, anti_matter[i][j]);
         q.push (qq );
       }
-      else if (kaboom(u,v,i,j)) {
-        opt = min (opt, depth[u][v] + 1);
-        depth[i][j] = opt;
-        stars.push (qq );
-      }
-
 
 
     }
 
-
-  }
-
-
-  mutate:
-  while (!stars.empty()) {
-    pii p = stars.front();
-    stars.pop();
-    grid[p.first][p.second] = '*';
-  }
-
-
+}
   return opt;
 }
 
 
 
-
 int main(int argc, char **argv) {
+
+  queue<pii> qm, qa;
 
   ifstream myReadFile;
 
@@ -134,22 +121,58 @@ int main(int argc, char **argv) {
      N++;
      for (int j = 1; j <= M; j++) {
        grid[N][j] = output[j - 1];
-       if (grid[N][j] == '+' || grid[N][j] == '-') {
-         q.push ( make_pair (N, j));
-         depth[N][j] = 0;
+       matter[N][j] = -1;
+       anti_matter[N][j] = -1;
+       if (grid[N][j] == '+') {
+         matter[N][j] = 0;
+         qm.push( make_pair (N, j));
        }
-       else depth[N][j] = -1;
+       else if (grid[N][j] == '-') {
+         anti_matter[N][j] = 0;
+         qa.push ( make_pair (N, j));
+       }
+
+
+
      }
   }
  }
  N--;
  myReadFile.close();
 
+
   for (int i = 0; i < N; i++) { grid[i][0] = 'X'; grid[i][M + 1] = 'X'; }
   for (int i = 0; i < M; i++) { grid[0][i] = 'X'; grid[N + 1][i] = 'X'; }
+  printDepth();
 
+  bfs(qm, true);
+  bfs(qa, false);
+  int opt = INT_MAX;
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j<= M; j++) {
+      if (matter[i][j] != 1 && anti_matter[i][j] != -1 && (matter[i][j] == anti_matter[i][j])) {
+        opt = min (opt, matter[i][j]);
+        goto result;
+      }
 
-  int opt = bfs();
+    }
+  }
+
+  result:
+
+  printDepth();
+
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= M; j++) {
+      if (matter[i][j] != 1 && anti_matter[i][j] != -1 && matter[i][j] == anti_matter[i][j] && matter[i][j] == opt) {
+        grid[i][j] = '*';
+      }
+    }
+
+  }
+
+  printGrid();
+
   if (opt == INT_MAX) {
     cout << "the world is saved" << endl;
   } else cout << opt << endl;
