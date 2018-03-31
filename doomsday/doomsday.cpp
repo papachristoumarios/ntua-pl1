@@ -66,7 +66,9 @@ int bfs() {
 
     cout << "Step" << endl;
     printGrid();
+
     printDepth();
+    cout << endl;
     cout << endl;
 
     pii p = q.front();
@@ -75,7 +77,6 @@ int bfs() {
     v = p.second;
     vector<pii> neigh = getNeighbors(p);
 
-    if (depth[u][v] == opt) continue;
     if (depth[u][v] > opt) goto mutate;
 
     for (pii qq : neigh) {
@@ -84,15 +85,17 @@ int bfs() {
 
       cout << "Neighbors of " << u << " " << v << " is " << i << " " << j << endl;
 
+
       if (grid[u][v] == grid[i][j]) continue;
-      else if (grid[i][j] == '.') {
+      else if (grid[i][j] == '.' || opt != INT_MAX) {
         depth[i][j] = depth[u][v] + 1;
         grid[i][j] = grid[u][v];
+
         q.push (qq );
       }
       else if (kaboom(u,v,i,j)) {
         opt = min (opt, depth[u][v] + 1);
-        depth[i][j] = opt;
+        depth[i][j] = depth[u][v] + 1;
         stars.push (qq );
       }
 
@@ -103,7 +106,7 @@ int bfs() {
 
   }
 
-
+  cout << "dsadasd" << endl;
   mutate:
   while (!stars.empty()) {
     pii p = stars.front();
