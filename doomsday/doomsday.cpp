@@ -60,8 +60,8 @@ int bfs() {
   int u, v, i, j;
 
   int opt = INT_MAX;
-  // printDepth();
-  // traverse graph
+  queue<pii> stars;
+
   while (!q.empty()) {
 
     cout << "Step" << endl;
@@ -74,23 +74,27 @@ int bfs() {
     u = p.first;
     v = p.second;
     vector<pii> neigh = getNeighbors(p);
+
+    if (depth[u][v] == opt) continue;
+    if (depth[u][v] > opt) goto mutate;
+
     for (pii qq : neigh) {
       i = qq.first;
       j = qq.second;
 
       cout << "Neighbors of " << u << " " << v << " is " << i << " " << j << endl;
 
-      if (opt < INT_MAX && depth[i][j] > opt) return opt;
-      else if (kaboom(u,v,i,j)) {
-        opt = min(opt, depth[u][v] + 1);
-        grid[i][j] = '*';
-      }
-      else if ((grid[u][v] != 'X' && depth[i][j] == -1) || (grid[i][j] = '+' || grid[i][j] == '-') ) {
+      if (grid[u][v] == grid[i][j]) continue;
+      else if (grid[i][j] == '.') {
         depth[i][j] = depth[u][v] + 1;
-        if (grid[u][v] != 'X') grid[i][j] = grid[u][v];
-        q.push ( qq );
+        grid[i][j] = grid[u][v];
+        q.push (qq );
       }
-
+      else if (kaboom(u,v,i,j)) {
+        opt = min (opt, depth[u][v] + 1);
+        depth[i][j] = opt;
+        stars.push (qq );
+      }
 
 
 
@@ -99,6 +103,13 @@ int bfs() {
 
   }
 
+
+  mutate:
+  while (!stars.empty()) {
+    pii p = stars.front();
+    stars.pop();
+    grid[p.first][p.second] = '*';
+  }
 
 
   return opt;
