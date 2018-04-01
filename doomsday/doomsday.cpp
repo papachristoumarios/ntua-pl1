@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <queue>
@@ -57,15 +58,18 @@ bool kaboom(int u, int v, int i, int j) {
 
 int bfs() {
   int u, v, i, j;
+
   int opt = INT_MAX;
   queue<pii> stars;
+
   while (!q.empty()) {
+
 
     pii p = q.front();
     q.pop();
     u = p.first;
     v = p.second;
-    if (depth[u][v] == opt) continue;
+    if (depth[u][v] == opt ) continue;
 
     vector<pii> neigh = getNeighbors(p);
 
@@ -83,8 +87,10 @@ int bfs() {
       }
       else if (kaboom(u,v,i,j)) {
         opt = min (opt, depth[u][v] + 1);
-        depth[i][j] = opt;
+        //depth[i][j] = opt;
         stars.push (qq );
+
+
       }
     }
   }
@@ -109,26 +115,26 @@ int main(int argc, char **argv) {
   N = 0;
   M = 0;
   if (myReadFile.is_open()) {
-  while (!myReadFile.eof()) {
+    while (!myReadFile.eof()) {
 
-     myReadFile >> output;
-     if (N == 0) M = (int) output.size();
-     N++;
-     for (int j = 1; j <= M; j++) {
-       grid[N][j] = output[j - 1];
-       if (grid[N][j] == '+' || grid[N][j] == '-') {
-         q.push ( make_pair (N, j));
-         depth[N][j] = 0;
-       }
-       else depth[N][j] = -1;
-     }
+      myReadFile >> output;
+      if (N == 0) M = (int) output.size();
+      N++;
+      for (int j = 1; j <= M; j++) {
+        grid[N][j] = output[j - 1];
+        if (grid[N][j] == '+' || grid[N][j] == '-') {
+          q.push ( make_pair (N, j));
+          depth[N][j] = 0;
+        }
+        else depth[N][j] = -1;
+      }
+    }
   }
- }
- N--;
- myReadFile.close();
+  N--;
+  myReadFile.close();
 
-  for (int i = 0; i < N; i++) { grid[i][0] = 'X'; grid[i][M + 1] = 'X'; }
-  for (int i = 0; i < M; i++) { grid[0][i] = 'X'; grid[N + 1][i] = 'X'; }
+  for (int i = 0; i < M+1; i++) { grid[i][0] = 'X'; grid[i][M + 1] = 'X'; }
+  for (int i = 0; i < N+1; i++) { grid[0][i] = 'X'; grid[N + 1][i] = 'X'; }
 
 
   int opt = bfs();
@@ -137,5 +143,6 @@ int main(int argc, char **argv) {
   } else cout << opt << endl;
 
   printGrid();
+
 
 }
