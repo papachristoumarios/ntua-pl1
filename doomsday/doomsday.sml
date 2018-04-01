@@ -97,40 +97,58 @@ fun doomsday fileName =
     val grid = Array2.fromList l;
     val depth = Array2.array(N, M, ~1);
 
+    val q = Queue.mkQueue(): ( int * int ) Queue.queue;
 
     fun isSpecial c = (c = "+" orelse c = "-")
+    fun init z = (Queue.enqueue(q, z); Array2.update(depth, first z, second z, 0); true);
 
     fun findSpecialRow res [] _ j = res
       | findSpecialRow res (x :: xs) i j =
         if isSpecial x then findSpecialRow ((j, i)::res) xs (i + 1) j
         else findSpecialRow res xs (i + 1) j;
 
-    fun findSpecial rr ll j M =
-      if (j >= M orelse ll = []) then rr
+    fun findSpecial ll j M =
+      if (j >= M orelse ll = []) then ()
       else (
         let
           val x = hd ll;
           val xs = tl ll;
           val rowres = findSpecialRow [] x 0 j;
         in
-          findSpecial (rowres @ rr) xs (j + 1) M
+          List.map init rowres;
+          findSpecial xs (j + 1) M
         end
       )
 
-    val special = findSpecial [] l 0 M;
-    val q = Queue.mkQueue(): ( int * int ) Queue.queue;
-    fun init z = (Queue.enqueue(q, z); Array2.update(depth, first z, second z, 0); true);
-    val alladded = List.map init special;
-
+    val thingsAdded = findSpecial l 0 M;
     val result = bfs grid q depth N M;
     val stars = second result;
     val safe = Queue.isEmpty stars;
 
-    fun printResult r =
-      if r <> INT_MAX then
-        print ((Int.toString r) ^ (Array2.fold Array2.RowMajor (op ^) "" grid) ^ "\n")
+    fun printGrid i N M =
+      if (i >= N) then ()
       else
-        print ("the world is saved" ^ (Array2.fold Array2.RowMajor (op ^) "" grid) ^ "\n")
+        (
+          let
+            fun printRow j M =
+              if (j >= M + 1) then ()
+              else (print (Array2.sub(grid, i, j)); printRow (j+1) M)
+          in
+            printRow 0 M;
+            printGrid (i + 1) N M
+          end
+        )
+
+    fun printResult r =
+      if r <> INT_MAX then (
+        print ((Int.toString r) ^ "\n");
+        printGrid 0 N M
+      )
+      else
+        (
+          print "the world is saved\n";
+          printGrid 0 N M
+        )
 
     fun fillStars x =
       if Queue.isEmpty stars then ()
