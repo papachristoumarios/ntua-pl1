@@ -4,7 +4,7 @@ fun min (x, y) = if x < y then x else y;
 
 fun bfs grid q depth N M =
   let
-    val INT_MAX = 214748364;
+    val INT_MAX = Option.valOf (Int.maxInt);
     val stars = Queue.mkQueue(): ( int * int ) Queue.queue;
 
     (* valid blocks not outside the grid *)
@@ -78,7 +78,7 @@ fun bfs grid q depth N M =
 
 fun doomsday fileName =
   let
-    val INT_MAX = 214748364;
+    val INT_MAX = Option.valOf (Int.maxInt);
 
 
     (* parse file *)
