@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   a.push_back((ull) 1);
   fclose(fptr);
 
-  // printvec(a);
+  printvec(a);
 
   vector<ull> left_lcm( (int) (N + 2),  1);
   vector<ull> right_lcm( (int) (N + 2), 1);
@@ -50,8 +50,8 @@ int main(int argc, char **argv) {
     right_lcm[i] = lcm(right_lcm[i + 1], a[i]);
   }
 
-  // printvec(left_lcm);
-  // printvec(right_lcm);
+  printvec(left_lcm);
+  printvec(right_lcm);
 
   int min_index = -1;
   ull minimum = left_lcm[N];
