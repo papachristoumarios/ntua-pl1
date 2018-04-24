@@ -117,7 +117,6 @@ int bfs() {
 
 int main(int argc, char **argv) {
 
-  queue<pii> qm, qa;
 
   ifstream myReadFile;
 
