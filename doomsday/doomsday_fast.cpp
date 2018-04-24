@@ -187,6 +187,8 @@ int main(int argc, char **argv) {
   for (int i = 0; i < N+1; i++) { grid[0][i] = 'X'; grid[N + 1][i] = 'X'; }
 
 
+	fclose(myReadFile);
+
   int opt = bfs();
   if (opt == INT_MAX) {
     printf("the world is saved\n");
