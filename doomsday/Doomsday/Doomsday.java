@@ -50,7 +50,7 @@ public class Doomsday {
     	int u = p.x;
     	int v = p.y;
 
-      System.out.println(" " + u + " "  + v );
+      // System.out.println(" " + u + " "  + v );
 
 
     	if (depth[u][v] == opt) {
