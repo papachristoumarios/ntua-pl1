@@ -25,10 +25,6 @@ public class Pistes {
 
 	private static void permuteHelper(int[] arr, int index){
 	    if(index >= arr.length - 1){ //If we are at the last element - nothing left to permute
-//	        for (int i = 0; i < N; i++) {
-//	        	System.out.print(arr[i]);
-//	        }
-//	        System.out.println();
 	    	int score = checkPermutation(arr);
 	    	
 	    	opt = max(score, opt);
@@ -53,7 +49,6 @@ public class Pistes {
 	}	
 	
 	public static int checkPermutation(int arr[]) { 
-//		System.out.println("=====================");
 		int score = 0;
 		int visited = 1;
 		int current = arr[0];
@@ -64,18 +59,10 @@ public class Pistes {
 		}
 		
 		while (i <= N - 1) {
-//			System.out.println("You are at " + current + " holding:");
-			
-//			printList(holding);
 		
 			for (int j = 0; j < k[current]; ++j) {
-//				System.out.println("Required is " + keys[current][j]);
 				boolean found =	holding.removeFirstOccurrence(keys[current][j]);
-				if (!found) {
-//					System.out.println("Score for this: " + score );
-					return score;
-					
-				}
+				if (!found) return score;
 				
 			}
 			score += s[current];
@@ -83,9 +70,8 @@ public class Pistes {
 			if (i < N - 1) { 
 			i++;
 			current = arr[i];
-			for (int j = 0; j < r[current]; ++j) {
-				holding.add(rewards[current][j]);
-			}
+			for (int j = 0; j < r[current]; ++j) holding.add(rewards[current][j]);
+			
 			}
 			
 		}
