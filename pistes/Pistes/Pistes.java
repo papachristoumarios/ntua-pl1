@@ -25,10 +25,10 @@ public class Pistes {
 
 	private static void permuteHelper(int[] arr, int index){
 	    if(index >= arr.length - 1){ //If we are at the last element - nothing left to permute
-	        for (int i = 0; i < N; i++) {
-	        	System.out.print(arr[i]);
-	        }
-	        System.out.println();
+//	        for (int i = 0; i < N; i++) {
+//	        	System.out.print(arr[i]);
+//	        }
+//	        System.out.println();
 	    	int score = checkPermutation(arr);
 	    	
 	    	opt = max(score, opt);
@@ -53,7 +53,7 @@ public class Pistes {
 	}	
 	
 	public static int checkPermutation(int arr[]) { 
-		System.out.println("=====================");
+//		System.out.println("=====================");
 		int score = 0;
 		int visited = 1;
 		int current = arr[0];
@@ -63,54 +63,33 @@ public class Pistes {
 			holding.add(rewards[current][j]);
 		}
 		
-		while (i < N - 1) {
-			System.out.println("You are at " + current + " holding:");
+		while (i <= N - 1) {
+//			System.out.println("You are at " + current + " holding:");
 			
-			printList(holding);
+//			printList(holding);
 		
 			for (int j = 0; j < k[current]; ++j) {
-				System.out.println("Required is " + keys[current][j]);
+//				System.out.println("Required is " + keys[current][j]);
 				boolean found =	holding.removeFirstOccurrence(keys[current][j]);
 				if (!found) {
-					System.out.println("Score for this: " + score );
-
+//					System.out.println("Score for this: " + score );
 					return score;
 					
 				}
 				
 			}
 			score += s[current];
+			
+			if (i < N - 1) { 
 			i++;
 			current = arr[i];
 			for (int j = 0; j < r[current]; ++j) {
 				holding.add(rewards[current][j]);
 			}
-				
-			
-		}
-		
-		System.out.println("Finally holding:");
-		printList(holding);
-		if (i == N - 1) {
-			current = arr[i];
-			System.out.println("Came to last" + arr[i]);
-			for (int j = 0; j < k[current]; ++j) {
-				System.out.println("Required is " + keys[current][j]);
-				boolean found =	holding.removeFirstOccurrence(keys[current][j]);
-				if (!found) {
-					System.out.println("Did last! Score for this: " + score );
-
-					return score;
-					
-				}
-				
 			}
-			score += s[current];
-
 			
 		}
 		
-		System.out.println("Ended! Score for this: " + score );
 		return score;
 	}
 	
@@ -144,9 +123,6 @@ public class Pistes {
 		N = sc.nextInt() + 1;
 		int[] idx = new int[N];
 		
-		LinkedList<Integer> l = new LinkedList<Integer>();
-		
-		
 		for (int i = 0; i < N; i++) {
 			k[i] = sc.nextInt();
 			r[i] = sc.nextInt();
@@ -160,26 +136,13 @@ public class Pistes {
 			
 			
 		}
-		
-		
-		for (int i = 0; i < k[0]; i++) {
-			System.out.println(keys[0][i]);
-		}
-		for (int i = 0; i < r[0]; i++) {
-			System.out.println(rewards[0][i]);
-		}
-		
+			
 		for (int i = 0; i < N; i++) idx[i] = i;
 		
-		
 		permute(idx);
+		System.out.println(opt);
+		
 	
-		for (int i : idx ) printPista(i);
-		System.out.println("N = " + N);
-		System.out.println("Score = " + opt);
-		
-		
-		
 	}
 	
 	
