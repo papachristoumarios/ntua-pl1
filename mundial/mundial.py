@@ -7,7 +7,7 @@ winners, losers = [], []
 
 class Team:
     def __init__(self, text):
-        self.name, agones, efage, evale = line.split(' ')
+        self.name, agones, evale, efage = line.split(' ')
         self.agones = int(agones)
         self.efage = int(efage)
         self.evale = int(evale)
@@ -20,7 +20,7 @@ for i, line in enumerate(lines):
         t = Team(line)
         winners.append(t)
 
-while winners != [] or losers != []:
+while winners != []:
     # get the losers
     tmp = []
     losers = []
@@ -30,7 +30,11 @@ while winners != [] or losers != []:
     winners = tmp
 
     for w, l in zip(winners, losers):
-        x = l.efage
-        print('{}-{} {}-{}'.format(w, l, x + 1, x))
+        print('{}-{} {}-{}'.format(w, l, l.efage, l.evale))
         w.agones -= 1
-        w.evale = w.evale - x - 1
+        w.evale -= l.efage
+        w.efage -= l.evale
+
+    if (winners == []):
+        t1, t2 = losers
+        print('{}-{} {}-{}'.format(t1, t2, t1.evale, t1.efage))
