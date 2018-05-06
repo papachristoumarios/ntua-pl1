@@ -28,7 +28,7 @@ public class Pistes {
 	    	int score = checkPermutation(arr);
 
 	    	opt = max(score, opt);
-	        return;
+	      return;
 	    }
 
 	    for(int i = index; i < arr.length; i++){ //For each index in the sub array arr[index...end]
