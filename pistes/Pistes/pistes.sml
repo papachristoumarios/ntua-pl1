@@ -39,8 +39,8 @@ fun pistes fileName =
     val r = Array.array(43, 0);
     val s = Array.array(43, 0);
     val opt = 0;
-    val keys = Array2.array(43, 10, 0);
-    val rewarded = Array2.array(43, 10, 0);
+    val keys = Array.array(43, [0]);
+    val rewarded = Array.array(43, [0]);
 
     fun next_int input =
       Option.valOf (TextIO.scanStream (Int.scan StringCvt.DEC) input)
@@ -71,8 +71,8 @@ fun pistes fileName =
         if i >= total then l
         else asList (i + 1) j arr total (Array2.sub(arr, i, j) :: l)
 
-    fun getRewards j = asList 0 j rewarded (Array.sub(r, j)) [];
-    fun getKeys j = asList 0 j keys (Array.sub(k, j)) [];
+    fun getRewards j = Array.sub(rewarded, j);
+    fun getKeys j = Array.sub(keys, j);
 
     fun readInts f j arr total input =
       if f >= total then ()
@@ -88,8 +88,10 @@ fun pistes fileName =
             val rr = next_int input;
             val ss = next_int input;
           in
-            readInts 0 i keys kk input;
-            readInts 0 i rewarded rr input;
+            Array.update(keys, i, next_n_int kk input);
+            Array.update(rewarded, i, next_n_int rr input);
+            (* readInts 0 i keys kk input; *)
+            (* readInts 0 i rewarded rr input; *)
             Array.update(k, i, kk);
             Array.update(s, i, ss);
             Array.update(r, i, rr);
