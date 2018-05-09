@@ -5,6 +5,7 @@ import java.util.Queue;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.Collection;
 
 public class Pistes {
 	static int N;
@@ -15,68 +16,22 @@ public class Pistes {
 	static int[][] keys = new int[43][10];
 	static int[][] rewards = new int[43][10];
 
+	class State {
+		public int score;
+		public int index;
+		public LinkedList<Integer> notVisited;
+		public LinkedList<Integer> holding;
+		public int total;
+
+		public State() {
+			notVisited = new LinkedList<Integer>();
+			holding = new LinkedList<Integer>();
+		}
+
+	}
+
 	public static int max(int a, int b) {
 		return a > b ? a : b;
-	}
-
-	public static void permute(int[] arr){
-	    permuteHelper(arr, 1);
-	}
-
-	private static void permuteHelper(int[] arr, int index){
-	    if(index >= arr.length - 1){ //If we are at the last element - nothing left to permute
-	    	int score = checkPermutation(arr);
-
-	    	opt = max(score, opt);
-	      return;
-	    }
-
-	    for(int i = index; i < arr.length; i++){ //For each index in the sub array arr[index...end]
-
-	        //Swap the elements at indices index and i
-	        int t = arr[index];
-	        arr[index] = arr[i];
-	        arr[i] = t;
-
-	        //Recurse on the sub array arr[index+1...end]
-	        permuteHelper(arr, index+1);
-
-	        //Swap the elements back
-	        t = arr[index];
-	        arr[index] = arr[i];
-	        arr[i] = t;
-	    }
-	}
-
-	public static int checkPermutation(int arr[]) {
-		int score = 0;
-		int visited = 1;
-		int current = arr[0];
-		int i = 0;
-		LinkedList<Integer> holding = new LinkedList<Integer>();
-		for (int j = 0; j < r[current]; j++) {
-			holding.add(rewards[current][j]);
-		}
-
-		while (i <= N - 1) {
-
-			for (int j = 0; j < k[current]; ++j) {
-				boolean found =	holding.removeFirstOccurrence(keys[current][j]);
-				if (!found) return score;
-
-			}
-			score += s[current];
-
-			if (i < N - 1) {
-			i++;
-			current = arr[i];
-			for (int j = 0; j < r[current]; ++j) holding.add(rewards[current][j]);
-
-			}
-
-		}
-
-		return score;
 	}
 
 	public static void printList(LinkedList<Integer> l) {
@@ -123,10 +78,74 @@ public class Pistes {
 
 		}
 
-		for (int i = 0; i < N; i++) idx[i] = i;
 
-		permute(idx);
+
+
+		Pistes obj = new Pistes();
+		obj.run();
+
 		System.out.println(opt);
+
+
+	}
+
+	public void run () throws Exception
+	{
+
+		State q0 = new State();
+		q0.index = 0;
+		q0.score = s[0];
+		q0.total = 1;
+		for (int i = 1; i <= N; i++) {
+			q0.notVisited.add(i);
+		}
+		for (int j = 0; j < r[0]; j++) {
+			q0.holding.add(rewards[0][j]);
+		}
+
+		Queue<State> q = new LinkedList<State>();
+		q.add(q0);
+		boolean found = false;
+
+		while(!q.isEmpty()) {
+			State tmp = q.remove();
+
+			if (tmp.total == N + 1) {
+				opt = max(opt, tmp.score);
+				return;
+			}
+
+			for (int current : tmp.notVisited) {
+				LinkedList<Integer> checker = new LinkedList<Integer>();
+				checker.addAll(tmp.holding);
+
+				for (int j = 0; j < k[current]; ++j) {
+					found =	checker.removeFirstOccurrence(keys[current][j]);
+					if (!found) {
+						opt = max(tmp.score, opt);
+						break;
+					}
+
+				}
+
+				if (!found) continue;
+
+				// create new state
+				State next = new State();
+				next.score = tmp.score + s[current];
+				next.total = tmp.total + 1;
+				next.index = current;
+				next.holding.addAll(checker);
+				for (int j = 0; j < r[current]; j++) next.holding.add(rewards[current][j]);
+				next.notVisited.addAll(tmp.notVisited);
+				next.notVisited.removeFirstOccurrence(current);
+				q.add(next);
+
+			}
+
+
+		}
+
 
 
 	}
