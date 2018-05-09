@@ -35,13 +35,6 @@ fun find item [] = false
 fun pistes fileName =
   let
     (* parsing the input *)
-    val k = Array.array(43, 0);
-    val r = Array.array(43, 0);
-    val s = Array.array(43, 0);
-    val opt = 0;
-    val keys = Array.array(43, [0]);
-    val rewarded = Array.array(43, [0]);
-
     fun next_int input =
       Option.valOf (TextIO.scanStream (Int.scan StringCvt.DEC) input)
 
@@ -54,11 +47,18 @@ fun pistes fileName =
         helper 0 n []
       end
 
-
-
     val stream = TextIO.openIn fileName;
 
     val N = (next_int stream) + 1;
+    val k = Array.array(N, 0);
+    val r = Array.array(N, 0);
+    val s = Array.array(N, 0);
+    val opt = 0;
+    val keys = Array.array(N, [0]);
+    val rewarded = Array.array(N, [0]);
+
+
+
 
     fun generate_list l i =
       if (i < 1) then l
