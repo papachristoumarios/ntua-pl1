@@ -28,7 +28,7 @@ public class Pistes {
 			notVisited = new LinkedList<Integer>();
 			holding = new LinkedList<Integer>();
 		}
-		
+
 		@Override
 	    public boolean equals(Object o) {
 	        if (this == o) return true;
@@ -40,9 +40,9 @@ public class Pistes {
 		@Override
 	    public int hashCode() {
 	        int hash = 0;
-	        for (int x : notVisited) hash += x;
+	        for (int x : notVisited) hash += 1 << x;
 	        return hash;
-	    }	
+	    }
 
 	}
 
@@ -74,7 +74,7 @@ public class Pistes {
 	}
 
 	public static void main(String[] args) throws Exception {
-		
+
 
 		File infile = new File(args[0]);
 		Scanner sc = new Scanner(infile);
@@ -111,8 +111,8 @@ public class Pistes {
 			t1.notVisited.add(10);
 			t2.notVisited.add(10);
 		}
-		
-		
+
+
 		State q0 = new State();
 		q0.index = 0;
 		q0.score = 0;
@@ -132,13 +132,13 @@ public class Pistes {
 		Queue<State> q = new ArrayDeque<>();
 		q.add(q0);
 		seen.add(q0);
-		
+
 		seen.add(t1);
 		if (seen.contains(t2)) {
 			System.out.println("dsad");
 		}
-		
-		
+
+
 		boolean found = true;
 
 		while(!q.isEmpty()) {
