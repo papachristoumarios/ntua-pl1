@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Collection;
+import java.util.ArrayDeque;
 
 public class Pistes {
 	static int N;
@@ -13,8 +14,8 @@ public class Pistes {
 	static int[] r = new int[43];
 	static int[] s = new int[43];
 	static int[] k = new int[43];
-	static int[][] keys = new int[43][10];
-	static int[][] rewards = new int[43][10];
+	static int[][] keys = new int[43][20];
+	static int[][] rewards = new int[43][20];
 
 	class State {
 		public int score;
@@ -27,6 +28,21 @@ public class Pistes {
 			notVisited = new LinkedList<Integer>();
 			holding = new LinkedList<Integer>();
 		}
+		
+		@Override
+	    public boolean equals(Object o) {
+	        if (this == o) return true;
+	        if (o == null || getClass() != o.getClass()) return false;
+	        State that = (State) o;
+	        return this.notVisited.equals(that.notVisited);
+	    }
+
+		@Override
+	    public int hashCode() {
+	        int hash = 0;
+	        for (int x : notVisited) hash += x;
+	        return hash;
+	    }	
 
 	}
 
@@ -58,6 +74,7 @@ public class Pistes {
 	}
 
 	public static void main(String[] args) throws Exception {
+		
 
 		File infile = new File(args[0]);
 		Scanner sc = new Scanner(infile);
@@ -78,34 +95,51 @@ public class Pistes {
 
 		}
 
-
-
-
 		Pistes obj = new Pistes();
 		obj.run();
 
 		System.out.println(opt);
 
-
 	}
 
 	public void run () throws Exception
 	{
-
+		State t1 = new State();
+		State t2 = new State();
+		if (t1.equals(t2)) {
+			System.out.println("DAS");
+			t1.notVisited.add(10);
+			t2.notVisited.add(10);
+		}
+		
+		
 		State q0 = new State();
 		q0.index = 0;
-		q0.score = s[0];
-		q0.total = 1;
-		for (int i = 1; i <= N; i++) {
-			q0.notVisited.add(i);
-		}
-		for (int j = 0; j < r[0]; j++) {
-			q0.holding.add(rewards[0][j]);
+		q0.score = 0;
+		q0.total = 0;
+		for (int i = 0; i <= N; i++) {
+			if (k[i] > 0) q0.notVisited.add(i);
+			else {
+				q0.score += s[i];
+				q0.total++;
+				for (int j = 0; j < r[i]; j++) {
+					q0.holding.add(rewards[i][j]);
+				}
+			}
 		}
 
-		Queue<State> q = new LinkedList<State>();
+		Set<State> seen = new HashSet<>();
+		Queue<State> q = new ArrayDeque<>();
 		q.add(q0);
-		boolean found = false;
+		seen.add(q0);
+		
+		seen.add(t1);
+		if (seen.contains(t2)) {
+			System.out.println("dsad");
+		}
+		
+		
+		boolean found = true;
 
 		while(!q.isEmpty()) {
 			State tmp = q.remove();
@@ -118,7 +152,7 @@ public class Pistes {
 			for (int current : tmp.notVisited) {
 				LinkedList<Integer> checker = new LinkedList<Integer>();
 				checker.addAll(tmp.holding);
-
+				found = true;
 				for (int j = 0; j < k[current]; ++j) {
 					found =	checker.removeFirstOccurrence(keys[current][j]);
 					if (!found) {
@@ -139,7 +173,12 @@ public class Pistes {
 				for (int j = 0; j < r[current]; j++) next.holding.add(rewards[current][j]);
 				next.notVisited.addAll(tmp.notVisited);
 				next.notVisited.removeFirstOccurrence(current);
-				q.add(next);
+				if (!seen.contains(next)) {
+					q.add(next);
+					seen.add(next);
+				} else {
+					System.out.println("Glytosa!");
+				}
 
 			}
 
