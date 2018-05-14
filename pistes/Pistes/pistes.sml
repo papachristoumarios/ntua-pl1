@@ -21,12 +21,20 @@ fun removeFirstOccurrence (item, list) =
       | xs::ys => if item = xs then removeFirstOccurrence(~item,ys)
           else xs::removeFirstOccurrence(item,ys)
 
-fun mySubtract L2 [] = L2
-  | mySubtract L2 (h :: t) =
+fun SubtractHelper L2 [] = L2
+  | SubtractHelper L2 (h :: t) =
     let
       val newList = removeFirstOccurrence(h, L2);
     in
-      mySubtract newList t
+       SubtractHelper newList t
+    end
+
+fun mySubtract L1 L2 =
+  let
+    val res = SubtractHelper L1 L2;
+  in
+    if res = [] andalso (length res) <> (length L1) - (length L2) then [~1]
+    else res
     end
 
 fun find item [] = false
@@ -108,18 +116,23 @@ fun pistes fileName =
         val new_total = total + 1;
         val new_index = current;
         val new_rewards = getRewards current;
-        val new_hold = (mySubtract hold keysFrom) @ new_rewards;
+        val sub = mySubtract hold keysFrom
+        val mooo = if sub = [~1] then print "Something wrong!\n" else ();
+        val new_hold = sub @ new_rewards;
         val new_notVisited = removeFirstOccurrence (current, notVisited);
         val new = (new_index, new_score, new_total, new_notVisited, new_hold);
-        val boo = if feasible then globopt := max(!globopt, new_score) else ();
+        val boo = if feasible andalso sub <> [~1] then globopt := max(!globopt, new_score) else ();
       in
-        if HashTable.find seen new_notVisited = NONE andalso feasible then (
+       if sub = [~1] then (~1, ~1, ~1, [], [])
+       else (
+       if sub <> [~1] andalso HashTable.find seen new_notVisited = NONE andalso feasible then (
             Queue.enqueue(q, new);
             HashTable.insert seen (new_notVisited, 1);
             new
           ) else (
             print "Glytosa!\n";
             new
+          )
           )
       end
 
@@ -150,6 +163,8 @@ fun pistes fileName =
           val boo = print ((Int.toString index) ^ "\n");
           val foo = print "Holding keys: \n";
           val foo = printList hold;
+          val boo = print ((Int.toString score) ^ "\n");
+
           (* get Neighbors that can be visited *)
           val neigh = getNeighbors hold notVisited;
           val new_opt = if neigh = [] then score else opt;
@@ -167,5 +182,6 @@ fun pistes fileName =
 
   in
     bfs 0;
-    print ((Int.toString (!globopt)) ^ "\n")
+    print ((Int.toString (!globopt)) ^ "\n");
+    hasKeys 2 [1,2]
   end

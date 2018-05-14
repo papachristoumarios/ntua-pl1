@@ -104,15 +104,7 @@ public class Pistes {
 
 	public void run () throws Exception
 	{
-		State t1 = new State();
-		State t2 = new State();
-		if (t1.equals(t2)) {
-			System.out.println("DAS");
-			t1.notVisited.add(10);
-			t2.notVisited.add(10);
-		}
-
-
+		
 		State q0 = new State();
 		q0.index = 0;
 		q0.score = 0;
@@ -133,16 +125,17 @@ public class Pistes {
 		q.add(q0);
 		seen.add(q0);
 
-		seen.add(t1);
-		if (seen.contains(t2)) {
-			System.out.println("dsad");
-		}
+		
 
 
 		boolean found = true;
 
 		while(!q.isEmpty()) {
 			State tmp = q.remove();
+			
+			System.out.println(tmp.index + " Holding");
+			printList(tmp.holding);
+			System.out.println("Score " + tmp.score);
 
 			if (tmp.total == N + 1) {
 				opt = max(opt, tmp.score);
