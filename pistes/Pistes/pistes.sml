@@ -106,7 +106,7 @@ fun pistes fileName =
     (* prepeare the queue *)
     val q = Queue.mkQueue(): ( int * int * int * int list * int list) Queue.queue;
     val dummy = Queue.enqueue(q, q0);
-    val seen : (int list, int) HashTable.hash_table = HashTable.mkTable (hashList, op=) (1024, Fail "not found")
+    val seen : (int list, int) HashTable.hash_table = HashTable.mkTable (hashList, op=) (1024324, Fail "not found")
     val dummy = HashTable.insert seen (notVisited, 1);
 
     fun getNewState (tmp, current, keysFrom, feasible) =
@@ -123,16 +123,12 @@ fun pistes fileName =
         val new = (new_index, new_score, new_total, new_notVisited, new_hold);
         val boo = if feasible andalso sub <> [~1] then globopt := max(!globopt, new_score) else ();
       in
-       if sub = [~1] then (~1, ~1, ~1, [], [])
+       if sub = [~1] then ()
        else (
        if sub <> [~1] andalso HashTable.find seen new_notVisited = NONE andalso feasible then (
             Queue.enqueue(q, new);
-            HashTable.insert seen (new_notVisited, 1);
-            new
-          ) else (
-            print "Glytosa!\n";
-            new
-          )
+            HashTable.insert seen (new_notVisited, 1)
+          ) else ()
           )
       end
 
@@ -172,7 +168,6 @@ fun pistes fileName =
           (* if you cannot visit anyone then update opt *)
           (* else for each neighbor get a new tuple  *)
           val nextStates = List.map (fn (feasible, current, keysFrom) => getNewState (tmp, current, keysFrom, feasible)) neigh;
-
 
         in
           bfs (max(opt, score))
