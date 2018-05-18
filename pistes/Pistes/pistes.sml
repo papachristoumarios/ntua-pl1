@@ -9,6 +9,14 @@ fun printList (l : int list) =
       printList (tl l)
   )
 
+fun listToString l =
+  let
+    val q = List.map Int.toString l;
+  in
+    foldr (fn (x,y) => x ^ "," ^ y) "" q
+  end
+
+
 fun hashList (l : int list) = Word.fromInt (foldr (op+) 0 l);
 
 fun power a 0 = 1
@@ -106,7 +114,7 @@ fun pistes fileName =
     (* prepeare the queue *)
     val q = Queue.mkQueue(): ( int * int * int * int list * int list) Queue.queue;
     val dummy = Queue.enqueue(q, q0);
-    val seen : (int list, int) HashTable.hash_table = HashTable.mkTable (hashList, op=) (1024324, Fail "not found")
+    val seen : (int list, int) HashTable.hash_table = HashTable.mkTable (hashList, op=) (1243244, Fail "not found")
     val dummy = HashTable.insert seen (notVisited, 1);
 
     fun getNewState (tmp, current, keysFrom, feasible) =
@@ -149,7 +157,7 @@ fun pistes fileName =
 
 
     fun bfs (opt : int) =
-      if Queue.isEmpty q then opt
+      if Queue.isEmpty q orelse !globopt = 2053  then opt
       else (
         let
           (* pop from queue *)
