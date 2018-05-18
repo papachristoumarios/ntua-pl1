@@ -1,3 +1,6 @@
+
+
+
 fun max (a, b) = if a >= b then a else b;
 (* compute L2 - L1 *)
 fun subtract (L2 : int list) (L1 : int list) = List.filter (fn x => List.all (fn y => x <> y) L1) L2
@@ -34,13 +37,15 @@ fun SubtractHelper L2 [] = L2
     let
       val newList = removeFirstOccurrence(h, L2);
     in
-       SubtractHelper newList t
+      if newList = L2 then [~1]
+      else SubtractHelper newList t
     end
 
 fun mySubtract L1 L2 =
   let
     val res = SubtractHelper L1 L2;
   in
+    (* printList res; *)
     if res = [] andalso (length res) <> (length L1) - (length L2) then [~1]
     else res
     end
@@ -101,7 +106,7 @@ fun pistes fileName =
         else ()
 
     val prs = parsePistes 0 stream;
-    val globopt = ref 0;
+    val globopt = ref (Array.sub(s, 0));
 
     (* q0 *)
     val index = 0;
@@ -120,12 +125,13 @@ fun pistes fileName =
     fun getNewState (tmp, current, keysFrom, feasible) =
       let
         val (index, score, total, notVisited, hold) =  tmp;
+        (* val foo = print ("parent " ^ (Int.toString index) ^ "\n"); *)
         val new_score = score + Array.sub(s, current);
         val new_total = total + 1;
         val new_index = current;
         val new_rewards = getRewards current;
         val sub = mySubtract hold keysFrom
-        val mooo = if sub = [~1] then print "Something wrong!\n" else ();
+        (* val mooo = if sub = [~1] then print "Something wrong!\n" else (); *)
         val new_hold = sub @ new_rewards;
         val new_notVisited = removeFirstOccurrence (current, notVisited);
         val new = (new_index, new_score, new_total, new_notVisited, new_hold);
@@ -164,14 +170,15 @@ fun pistes fileName =
           val tmp = Queue.dequeue q;
           val (index, score, total, notVisited, hold) =  tmp;
 
-          val boo = print ((Int.toString index) ^ "\n");
+          (* val boo = print ((Int.toString index) ^ "\n");
           val foo = print "Holding keys: \n";
           val foo = printList hold;
-          val boo = print ((Int.toString score) ^ "\n");
+          val ocoo = printList notVisited;
+          val boo = print ((Int.toString score) ^ "\n"); *)
 
           (* get Neighbors that can be visited *)
           val neigh = getNeighbors hold notVisited;
-          val new_opt = if neigh = [] then score else opt;
+          val new_opt = if neigh = [] orelse total = N then max(score, opt) else opt;
 
           (* if you cannot visit anyone then update opt *)
           (* else for each neighbor get a new tuple  *)
@@ -183,8 +190,8 @@ fun pistes fileName =
         end
       );
 
+    val init = Array.sub(s, 0);
+    val soln = bfs init;
   in
-    bfs 0;
-    print ((Int.toString (!globopt)) ^ "\n");
-    hasKeys 2 [1,2]
+    print ((Int.toString (!globopt)) ^ "\n")
   end

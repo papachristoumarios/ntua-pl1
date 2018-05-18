@@ -104,7 +104,7 @@ public class Pistes {
 
 	public void run () throws Exception
 	{
-		
+
 		State q0 = new State();
 		q0.index = 0;
 		q0.score = 0;
@@ -125,16 +125,18 @@ public class Pistes {
 		q.add(q0);
 		seen.add(q0);
 
-		
+
 
 
 		boolean found = true;
 
 		while(!q.isEmpty()) {
 			State tmp = q.remove();
-			
+
 			System.out.println(tmp.index + " Holding");
 			printList(tmp.holding);
+			System.out.print("Not visited : ");
+			printList(tmp.notVisited);
 			System.out.println("Score " + tmp.score);
 
 			if (tmp.total == N + 1) {
