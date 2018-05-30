@@ -27,9 +27,12 @@ while winners != []:
     for w in winners:
         if w.agones == 1: losers.append(w)
         else: tmp.append(w)
-    winners = tmp
+    winners = sorted(tmp, key=lambda x: x.evale)
+    losers = sorted(losers, key=lambda x: x.efage)
 
     for w, l in zip(winners, losers):
+        if (w.evale < l.efage):
+            print('I am so sad!')
         print('{}-{} {}-{}'.format(w, l, l.efage, l.evale))
         w.agones -= 1
         w.evale -= l.efage
