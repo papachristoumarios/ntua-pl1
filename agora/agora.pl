@@ -76,8 +76,8 @@ read_list(Stream, N, L) :-
 		N == 0 -> L = [];
 		N > 0 -> read_line_to_codes(Stream, Line2),
 						 atom_codes(Atom2, Line2),
-						 split_string(Atom2, " ", "", S),
-						 maplist(atom_number, S, L)
+						 atomic_list_concat(S, ' ', Atom2),
+    		 		 maplist(atom_number, S, L)
 		).
 
 

@@ -1,9 +1,17 @@
 import sys
 
+import itertools
 with open(sys.argv[1]) as f:
     lines = f.read().splitlines()
 
 winners, losers = [], []
+
+def check_perm(win, lose):
+    for w, l in zip(win, lose):
+        if w.evale < l.efage:
+            return False
+    return True
+
 
 class Team:
     def __init__(self, text):
@@ -27,17 +35,26 @@ while winners != []:
     for w in winners:
         if w.agones == 1: losers.append(w)
         else: tmp.append(w)
-    winners = sorted(tmp, key=lambda x: x.evale)
-    losers = sorted(losers, key=lambda x: x.efage)
+    winners = tmp
 
-    for w, l in zip(winners, losers):
-        if (w.evale < l.efage):
-            print('I am so sad!')
-        print('{}-{} {}-{}'.format(w, l, l.efage, l.evale))
-        w.agones -= 1
-        w.evale -= l.efage
-        w.efage -= l.evale
+    if len(winners) < 2:
+        break
 
-    if (winners == []):
-        t1, t2 = losers
+    for winners_perm in itertools.permutations(winners):
+
+        if check_perm(winners_perm, losers):
+            print('Valid permutation!')
+            for w, l in zip(winners_perm, losers):
+                print('{}-{} {}-{}'.format(w, l, l.efage, l.evale))
+                w.agones -= 1
+                w.evale -= l.efage
+                w.efage -= l.evale
+
+
+            winners = winners_perm
+            break
+
+    if len(winners) == 2:
+        t1, t2 = winners
         print('{}-{} {}-{}'.format(t1, t2, t1.evale, t1.efage))
+        break
