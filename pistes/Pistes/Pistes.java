@@ -11,11 +11,11 @@ import java.util.ArrayDeque;
 public class Pistes {
 	static int N;
 	static int opt = 0;
-	static int[] r = new int[43];
-	static int[] s = new int[43];
-	static int[] k = new int[43];
-	static int[][] keys = new int[43][20];
-	static int[][] rewards = new int[43][20];
+	static int[] r = new int[50];
+	static int[] s = new int[50];
+	static int[] k = new int[50];
+	static int[][] keys = new int[50][20];
+	static int[][] rewards = new int[50][20];
 
 	class State {
 		public int score;

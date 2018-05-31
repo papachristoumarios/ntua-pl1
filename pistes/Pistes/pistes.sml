@@ -163,7 +163,7 @@ fun pistes fileName =
 
 
     fun bfs (opt : int) =
-      if Queue.isEmpty q orelse !globopt = 2053  then opt
+      if Queue.isEmpty q  then opt
       else (
         let
           (* pop from queue *)
