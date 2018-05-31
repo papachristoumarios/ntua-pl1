@@ -39,6 +39,7 @@ find(_,[],C):-C=false,!.
 find(Item,[H|T],C):-
 	(isEqual(H,Item), C =true,!; find(Item,T,C)).
 
+valid([],[H|T],C):-C=false,!.
 valid([],[],C):-C=true,!.
 valid([H|T],[],C):-C=true,!.	%i 2i lista na yparxei mesa sti 1i
 valid([H1|T1],[H2|T2],C):-
