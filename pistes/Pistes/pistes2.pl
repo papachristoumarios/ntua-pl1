@@ -16,10 +16,6 @@ getKeys([],[]).
 max(A,B,C):-
 	A>B, C is A; C is B.
 
-printlist(L):-
-	list_empty(L,XC),
-	(XC, nl; head(L,H), write(H), taill(L,T), list_empty(T,XCC),(XCC,nl; write(', '),printlist(T))).
-
 power(X,Y,Z):- Z is X**Y.
 
 
@@ -67,8 +63,11 @@ parsePista(L, Result) :-
 	getPistaRewards(L, Rewards),
 	Result = [Keys, Rewards, Stars].
 
-state(A,B,[],C):-writeln(B), write('foo').
-state(Keys, Score,Pistes,Head) :- % head einai to kefali tis arxikis listas apo pistes
+state(A,B,[],C, U):-
+	% writeln(B),
+	% write('foo'),
+	U = B.
+state(Keys, Score,Pistes,Head, U) :- % head einai to kefali tis arxikis listas apo pistes
 	head(Pistes,H),
 	getKeys(H, K),
 	getRewards(H, S),
@@ -81,13 +80,15 @@ state(Keys, Score,Pistes,Head) :- % head einai to kefali tis arxikis listas apo 
 				append(Rest,S,New_keys),
 				taill(Pistes,T),
 				head(T,Hea),
-				state(New_keys,New_score,T,Hea);
+				state(New_keys,New_score,T,Hea, U);
 	taill(Pistes,T1),
 	append(T1,[H],T),
 	head(T,H1), (
 		isNotEqual(H1,Head),
-		state(Keys,Score,T,Head);
-		writeln(Score),!)
+		state(Keys,Score,T,Head, U);
+		% writeln(Score),
+		U = Score,
+		!)
 	).
 
 	% Parse input
@@ -118,10 +119,22 @@ read_input(File, N, Q) :-
 	maplist(parsePista, L, Q).
 
 
-solve(File, Head) :-
+solution(File, Solutions) :-
 	read_input(File, N, Pistes),
 	% mideniki pista
 	head(Pistes, Head),
 	getStars(Head, InitialScore),
-	state([], 0, Pistes, Head)
+	findall(Z, state([], 0, Pistes, Head, Z), Solutions)
 	.
+
+pistes(File, Q) :-
+	once(solution(File, S)),
+	maxList(S, Q).
+
+maxList([P|T], O) :- maxList(T, P, O).
+
+maxList([], P, P).
+maxList([H|T], P, O) :-
+    (    H > P
+    ->   maxList(T, H, O)
+    ;    maxList(T, P, O)).
