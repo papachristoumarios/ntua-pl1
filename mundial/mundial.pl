@@ -53,14 +53,11 @@ find_valid_matcharisma(Loser,Winner,Head,Res):- %kefali listas loser
 	taill(Loser,TL),
 	taill(Winner,TW),
 	( isEqual(M,[]),
-	head(TL,New_l),
 	append(TL,[HL],Loser1),
+	head(Loser1,New_l),
 	(isNotEqual(Head,New_l),
 	find_valid_matcharisma(Loser1,Winner,Head,Res);
-	append(TW,[HW],Winner11),
-	append(TL,[HL],Loser11),
-	head(TL,HG),
-	find_valid_matcharisma(Loser11,Winner11,HG,Res),!);
+	isEqual(Head,New_l),!);
 	head(TL,Hea),
 	append(Res,M,Res1),
 	find_valid_matcharisma(TL,TW,Hea,Res1) ).
