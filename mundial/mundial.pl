@@ -7,7 +7,7 @@ list_empty([_|_], false).
 isEqual(A,A).
 isNotEqual(A,B):- A\=B.
 pushFront(Item,List,[Item|List]).
-sign(A,B):- C is A - B, C>0.
+sign(A,B):- C is A - B, C > 0.
 
 getname(team(R, _, _,_), R).
 getname([team(R, _, _,_)], R).
@@ -33,7 +33,7 @@ team(sanmarino, 1, 1, 4).
 team(liechtenstein, 1, 0, 7).
 
 
-category([],A,B,Res1,Res2):- A = Res1, B = Res2,!.	
+category([],A,B,Res1,Res2):- A = Res1, B = Res2,!.
 category(L,Losers,Winners,Res1,Res2):-
 	head(L,H),
 	taill(L,T),
@@ -47,16 +47,16 @@ category(L,Losers,Winners,Res1,Res2):-
 categorize(L,Loser,Winner):-
 	category(L,[],[],Loser,Winner),!.
 
-	
+
 
 valid(HW,HL,M,Refr):-
 	getebale(HW,Ebale),
 	getefage(HL,Efage),
 	getebale(HL,Scor),
 	getefage(HW,Scor1),
-	(sign(Ebale,Efage), sign(Scor1,Scor), 
-	getname(HW,Nikitis), 	
-	getname(HL,Xamenos), 
+	(sign(Ebale,Efage), sign(Scor1,Scor),
+	getname(HW,Nikitis),
+	getname(HL,Xamenos),
 	M = match(Nikitis,Xamenos,Efage,Scor),
 	New_ebale is Ebale - Efage,
 	New_efage is Scor1 - Scor,
@@ -66,7 +66,7 @@ valid(HW,HL,M,Refr):-
 	!;
 	M = [],!).
 
-find_valid_matcharisma([],[],Head,Res,U,New_winners):- 
+find_valid_matcharisma([],[],Head,Res,U,New_winners):-
 	%U=Res,
 	%writeln(New_winners),
 	categorize(New_winners,Loser,Winner),
@@ -79,15 +79,15 @@ find_valid_matcharisma([],[],Head,Res,U,New_winners):-
 	getebale(H,Ebale),
 	getefage(H,Efage),
 	getefage(T,Scor),
-	(isEqual(Scor,Ebale),	
+	(isEqual(Scor,Ebale),
 	M = match(Nikitis,Xamenos,Ebale,Efage),
 	append(Res,[M],Res1),
 	U = Res1,!;
-	!); 
+	!);
 	%U=Res,!;
 	%writeln(Res),
 	find_valid_matcharisma(Loser,Winner,HL,Res,U,[])
-	
+
 	).
 
 
@@ -97,8 +97,8 @@ find_valid_matcharisma(Loser,Winner,Head,Res,U,New_winners):- %kefali listas los
 	head(Winner,HW),
 	valid(HW,HL,M,Refr),
 	taill(Loser,TL),
-	taill(Winner,TW),	
-	(isNotEqual(M,[]), 
+	taill(Winner,TW),
+	(isNotEqual(M,[]),
 	append(Res,[M],Res1),
 	head(TL,Hea),
 	append(New_winners,[Refr],New_winners1),
@@ -106,11 +106,11 @@ find_valid_matcharisma(Loser,Winner,Head,Res,U,New_winners):- %kefali listas los
 	append(TL,[HL],Loser11),
 	head(Loser11,HLL),
 	(isEqual(HLL,Head),!;
-	find_valid_matcharisma(Loser11,Winner,Head,Res,U,New_winners)		
-	)	
+	find_valid_matcharisma(Loser11,Winner,Head,Res,U,New_winners)
+	)
 	).
-	
-	
+
+
 play(L,X):-
 	categorize(L,Loser,Winner),
 	head(Loser,HL),
