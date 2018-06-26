@@ -30,3 +30,5 @@ duplicate([X|Xs], Y, Z) :-
     Xs = [] -> Z = Q;
     duplicate(Xs, Q, Z)
   ).
+
+adder2([X1, X2 | X3],[Y1, Y2 | Y3],Z):- W is X1 + Y1, U is X2 + Y2, Z = [W, U].
