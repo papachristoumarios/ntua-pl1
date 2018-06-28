@@ -1,0 +1,18 @@
+fun munge f g [] = []
+   | munge f g (h::t) = f(h) :: g(h) :: (munge f g t) ;
+
+fun maxSumSublist2 l =
+   let
+     val pos = List.filter (fn x => x > 0) l;
+   in
+     foldl op + 0 pos
+   end;
+
+fun maxSumSublist [] = 0
+  | maxSumSublist (h :: t) =
+    if h > 0 then h + (maxSumSublist t)
+    else maxSumSublist t;
+
+fun listify [] _ = [[]]
+  | listify (h::t) x = 
+    

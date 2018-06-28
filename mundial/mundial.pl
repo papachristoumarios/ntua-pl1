@@ -1,123 +1,3 @@
-head([X|_],X).
-head([],[]).
-taill([_|X],X).
-taill([],[]).
-list_empty([], true).
-list_empty([_|_], false).
-isEqual(A,A).
-isNotEqual(A,B):- A\=B.
-pushFront(Item,List,[Item|List]).
-sign(A,B):- C is A - B, C > 0.
-
-getname(team(R, _, _,_), R).
-getname([team(R, _, _,_)], R).
-getmatches(team(_, R, _, _), R).
-getebale(team(_, _, R, _), R).
-getebale([team(_, _, R, _)], R).
-getefage(team(_, _, _, R), R).
-getefage([team(_, _, _, R)], R).
-
-getnameniki(team(R, _, _,_), R).
-getebaleniki(team(_, _, R, _), R).
-getefageniki(team(_, _, _, R), R).
-
-getlist([],Res):- Res=[].
-getlist([H|T],Res):-
-	(nonvar(H),Res=H,!;
-	getlist(T,Res)).
-
-
-team(monaco, 2, 10, 2).
-team(andorra, 2, 6, 4).
-team(sanmarino, 1, 1, 4).
-team(liechtenstein, 1, 0, 7).
-
-
-category([],A,B,Res1,Res2):- A = Res1, B = Res2,!.
-category(L,Losers,Winners,Res1,Res2):-
-	head(L,H),
-	taill(L,T),
-	getmatches(H,M),
-	(isEqual(M,1),
-	append(Losers,[H],Losers1),
-	category(T,Losers1,Winners,Res1,Res2);
- 	append(Winners,[H],Winners1),
-	category(T,Losers,Winners1,Res1,Res2)).
-
-categorize(L,Loser,Winner):-
-	category(L,[],[],Loser,Winner),!.
-
-
-
-valid(HW,HL,M,Refr):-
-	getebale(HW,Ebale),
-	getefage(HL,Efage),
-	getebale(HL,Scor),
-	getefage(HW,Scor1),
-	(sign(Ebale,Efage), sign(Scor1,Scor),
-	getname(HW,Nikitis),
-	getname(HL,Xamenos),
-	M = match(Nikitis,Xamenos,Efage,Scor),
-	New_ebale is Ebale - Efage,
-	New_efage is Scor1 - Scor,
-	getmatches(HW, R),
-	New_matches is R - 1,
-	Refr = team(Nikitis,New_matches,New_ebale,New_efage),
-	!;
-	M = [],!).
-
-find_valid_matcharisma([],[],Head,Res,U,New_winners):-
-	%U=Res,
-	%writeln(New_winners),
-	categorize(New_winners,Loser,Winner),
-	head(Loser,HL),
-	(isEqual(Winner,[]),
-	head(Loser,H),
-	taill(Loser,T),
-	getname(H,Nikitis),
-	getname(T,Xamenos),
-	getebale(H,Ebale),
-	getefage(H,Efage),
-	getefage(T,Scor),
-	(isEqual(Scor,Ebale),
-	M = match(Nikitis,Xamenos,Ebale,Efage),
-	append(Res,[M],Res1),
-	U = Res1,!;
-	!);
-	%U=Res,!;
-	%writeln(Res),
-	find_valid_matcharisma(Loser,Winner,HL,Res,U,[])
-
-	).
-
-
-find_valid_matcharisma([],A,Head,Res,U,New_winners):- !.
-find_valid_matcharisma(Loser,Winner,Head,Res,U,New_winners):- %kefali listas loser
-	head(Loser,HL),
-	head(Winner,HW),
-	valid(HW,HL,M,Refr),
-	taill(Loser,TL),
-	taill(Winner,TW),
-	(isNotEqual(M,[]),
-	append(Res,[M],Res1),
-	head(TL,Hea),
-	append(New_winners,[Refr],New_winners1),
-	find_valid_matcharisma(TL,TW,Hea,Res1,U,New_winners1);
-	append(TL,[HL],Loser11),
-	head(Loser11,HLL),
-	(isEqual(HLL,Head),!;
-	find_valid_matcharisma(Loser11,Winner,Head,Res,U,New_winners)
-	)
-	).
-
-
-play(L,X):-
-	categorize(L,Loser,Winner),
-	head(Loser,HL),
-	findall(Z, find_valid_matcharisma(Loser,Winner,HL,[],Z,[]),Solutions),
-	getlist(Solutions,X).
-
-
 read_input(File, N, Teams) :-
     open(File, read, Stream),
     read_line_to_codes(Stream, Line),
@@ -138,6 +18,81 @@ read_line(Stream, team(Name, P, A, B)) :-
     atomic_list_concat([Name | Atoms], ' ', Atom),
     maplist(atom_number, Atoms, [P, A, B]).
 
-mundial(File,Q):-
+% [team(monaco, 2, 10, 2), team(andorra, 2, 11, 4), team(sanmarino, 1, 1, 4), team(liechtenstein, 1, 0, 7)]
+
+beats(team(WName, WAgones, WEvale, WEfage), team(LName, LAgones, LEvale, LEfage)) :-
+	WEvale > LEvale.
+
+iswinner(team(Name, Agones, Evale, Efage)) :-
+	Agones > 1.
+
+isloser(team(Name, Agones, Evale, Efage)) :-
+	Agones =:= 1.
+
+split_teams(Teams, Winners, Losers) :-
+	exclude(iswinner, Teams, Losers),
+	exclude(isloser, Teams, Winners).
+
+split_teams_finals(Teams, Winners, Losers) :-
+	(
+		Teams = [X, Y] -> Winners = [X], Losers = [Y];
+		split_teams(Teams, Winners, Losers)
+	).
+
+valid([], []).
+valid([W | Ws], [L | Ls]) :-
+	beats(W, L), valid(Ws, Ls).
+
+valid_round([], []).
+valid_round(W, L, X) :-
+	permutation(W, X),
+	valid(X, L).
+
+play_together([], [], [], []).
+play_together(
+	[team(WName, WAgones, WEvale, WEfage) | Ws],
+ 	[team(LName, LAgones, LEvale, LEfage) | Ls],
+	[M | Matches], [NW | NewWinners]) :-
+		NWAgones is WAgones - 1,
+		NWEvale is WEvale - LEfage,
+		NWEfage is WEfage - LEvale,
+		M = match(WName, LName, LEfage, LEvale),
+		NW = team(WName	, NWAgones, NWEvale, NWEfage),
+		play_together(Ws, Ls, Matches, NewWinners).
+
+% solve([team(WName, WAgones, WEvale, WEfage)], [team(LName, LAgones, LEvale, LEfage)], [Final]) :-
+% 	WEvale >= 0, WEfage >= 0,
+% 	LEvale >= 0, LEfage >= 0,
+% 	WEvale =\= LEvale,
+% 	Final = match(WName, LName, WEvale, LEvale).
+
+
+
+solve(Winners, Losers, [M | Matches]) :-
+  (
+    Winners = [team(WName, WAgones, WEvale, WEfage)],
+    Losers = [team(LName, LAgones, LEvale, LEfage)],
+    WEvale >= 0, WEfage >= 0,
+  	LEvale >= 0, LEfage >= 0,
+  	WEvale =\= LEvale -> write('Le poule'), M = match(WName, LName, WEvale, LEvale), !;
+
+    valid(Winners, Losers),
+    play_together(Winners, Losers, M, TempWinners),
+    write(M), nl,
+    write('Temp Winners'),
+    write(TempWinners), nl,
+    once(split_teams(TempWinners, NewWinners, NewLosers)),
+    write('New Winners'), nl,
+    write('New Losers'), nl,
+    write(NewWinners), nl,
+    valid_round(NewWinners, NewLosers, CorrectWinners),
+    solve(CorrectWinners, NewLosers, Matches)
+  ).
+
+
+mundial(File, Matches) :-
 	read_input(File, N, Teams),
-	play(Teams,Q).
+	split_teams(Teams, W, L),
+	once(valid_round(W, L, InitWin)),
+	write(InitWin), nl, write(L), nl,
+	solve(InitWin, L, Matches).
