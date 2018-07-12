@@ -1,157 +1,114 @@
 import sys
-import copy
 import itertools
-import math as m
+from copy import copy
+from collections import deque
 
-def check_perm(win, lose):
-    for w, l in zip(win, lose):
-        if not w.evale > l.efage:
-            # print('Ivalid on ', w, l, w.evale, l.efage)
-            return False
-    return True
-
-
-class Team:
-    def __init__(self, text):
-        self.name, agones, evale, efage = line.split(' ')
-        self.agones = int(agones)
-        self.efage = int(efage)
-        self.evale = int(evale)
-
-    __str__ = lambda self: self.name
-    __repr__ = lambda self: self.name
-
-class State:
-
-    def __init__(self, w, l):
-        self.winners = list(copy.deepcopy(w))
-        self.losers = list(copy.deepcopy(l))
-
-    def split_teams(self):
-        new_winners, new_losers = [], []
-
-        for w in self.winners:
-            if w.agones == 1:
-                new_losers.append(w)
-            else:
-                new_winners.append(w)
-        return new_winners, new_losers
-
-    def play_together(self):
-        matches = []
-        for i in range(len(self.winners)):
-            w, l = self.winners[i], self.losers[i]
-            w.agones -= 1
-            match = (w, l, l.efage, l.evale)
-            matches.append(match)
-            w.evale -= l.efage
-            w.efage -= l.evale
-            self.winners[i] = w
-        self.matches = matches
+def valid(win,los,temp):
+	f = (win[2]>=los[3] and win[3] >= los[2])
+	h = (los[3] != los[2])
+	g = (win[2] - los[3]) < (win[3] - los[2])
+	w = win[1] - 1
+	if w==1:
+		apotelesma=g
+	else:
+		apotelesma=True
+	if temp==0:
+		return (f and h and apotelesma)
+	elif temp==1:
+		return (f and h)
 
 
+def my_perm(p, l):
+	w = [tuple(z) for z in p]
+	tmp = set(w)
+	n = len(w)
+	r = [[]]
+	tmp = set(w)
+	flag = False
+	for s in r:
+		for x in tmp - set(s):
+			t = s + [x]
+			if valid_permu(t, l, n):
+				r.append(t)
+			if len(t) == n:
+				flag = True
+				yield [list(z) for z in t]
 
-    def __repr__(self):
-        return str(self.matches)
+	if not flag:
+		for t in itertools.permutations(p, len(l)):
+			yield t
 
-    def print_matches(self):
-        for r in self.matches:
-            w, l, x, y = r
-            print('{}-{} {}-{}'.format(w,l,x,y))
+def valid_permu(w, l, m):
+	n = min(len(w), len(l))
+	for i in range(n):
+		if not valid(w[i], l[i], m == 4):
+			return False
+	return True
 
-    def is_final(self):
-        if self.winners != []:
-            return False
-        else:
-            x, y = self.losers
-            if x.evale > x.efage:
-                self.winners, self.losers = [x], [y]
-            else:
-                self.winners, self.losert = [y] , [x]
-            self.play_together()
-            # print(self.matches)
-            assert(len(self.matches) == 1)
-            return True
+def find_valid_matcharisma(new_winners,typoma,N):
 
+	Loser=[]
+	Winner=[]
+	for i in new_winners:
+		if(i[1]==1):
+			jj=copy(i)
+			Loser.append(jj)
+		else:
+			jj=copy(i)
+			Winner.append(jj)
 
-def solve(state):
-    parent = {}
-    stack = [state]
-    parent[state] = None
-    valid = False
+	if (N ==2):
+		#print(len(Loser))
+		t1,t2 = Loser
+		if (t1[2] == t2[3] and t1[3] == t2[2] and t1[2] !=t2[2]):
+			typoma.append([t1[0], t2[0], t1[2], t1[3]])
+			for i in typoma:
+				print('{}-{} {}-{}'.format(i[0],i[1],i[2],i[3]))
+			return (True)
+	#print(N)
+	for x in itertools.permutations(Winner, len(Loser)):
+		temp = list(zip(x, Loser))
+		typoma1 = typoma[:]
+		typoma2 = []
+		new_winners1 = []
 
-    while stack != []:
+		for i in range(len(temp)):
+			los = temp[i][1]
+			nik = temp[i][0]
+			#print(nik.onoma, los.onoma)
+			if N==4:
+				isvalid = valid(nik, los, 1)
+			else:
+				isvalid = valid(nik, los, 0)
+			if (not isvalidonoma):
+				#print("breokes")
+				break;
+			typoma2.append([nik[0], los[0], los[3], los[2]])
+			nik1 = copy(nik)
+			los1 = copy(los)
+			nik1[1] = nik1[1] - 1
+			nik1[2] = nik1[2] - los1[3]
+			nik1[3] = nik1[3] - los1[2]
+			new_winners1.append(nik1)
 
-        current = stack.pop()
+		if not isvalid:
+			continue
 
-        if current.is_final():
-            # print('Final')
-            # print(current)
-            # print('true')
-            valid = True
-            return current, parent
-
-        current.play_together()
-        # print('Current is ', current.winners, current.losers)
-        # print('Winners:')
-        # for w in current.winners:
-        #     print(w, w.evale, w.efage)
-        # print('Losers')
-        # for l in current.losers:
-            # print(l, l.evale, l.efage)
-        # print('Matches ', current.matches)
-
-        new_winners, new_losers = current.split_teams()
-
-        for winners_ in itertools.permutations(new_winners):
-            if check_perm(winners_, new_losers):
-                nxt = State(winners_, copy.copy(new_losers))
-                stack.append(nxt)
-                parent[nxt] = current
-
-    return None, None
-
-
-
-
+		#print(typoma1)
+		if (len(new_winners1) == N/2):
+			typoma1 = typoma1 + typoma2
+			result = find_valid_matcharisma(new_winners1, typoma1, N/2)
+			if (result):
+				return (True)
 
 
 if __name__ == '__main__':
-    with open(sys.argv[1]) as f:
-        lines = f.read().splitlines()
-
-    winners, losers = [], []
-
-    # initial winners and losers
-    for i, line in enumerate(lines):
-        if i == 0:
-            global N, K
-            N = int(line)
-            K = int(m.log2(N))
-        else:
-            t = Team(line)
-            if t.agones == 1:
-                losers.append(t)
-            else:
-                winners.append(t)
-
-    # for w, l in zip(winners, losers):
-    #     print(w, w.agones, w.efage, w.evale)
-    #     print(l, l.agones, l.efage, l.evale)
-
-
-    for winners_ in itertools.permutations(winners):
-        if check_perm(winners_, losers):
-            state = State(winners_, losers)
-            final, parent = solve(state)
-            if final and parent:
-                current = final
-                # print(final)
-                # print('finished')
-                # print('\nResults')
-                while 42:
-                    current.print_matches()
-                    if parent[current] == None:
-                        break
-                    current = parent[current]
-                exit()
+	with open(sys.argv[1]) as f:
+		lines = f.read().splitlines()
+	N=int(lines[0])
+	lista=[]
+	for i in range(N):
+		kati1=lines[i+1].split(' ')
+		kati2=[kati1[0],int(kati1[1]),int(kati1[2]),int(kati1[3])]
+		lista.append(kati2)
+	find_valid_matcharisma(lista,[],N)
