@@ -1,6 +1,6 @@
 # Programming Languages I
 
-Programming Languages assignments for ECE NTUA course _Programming Languages I_
+Programming Languages assignments for ECE NTUA course [_Programming Languages I_](https://courses.softlab.ntua.gr/pl1/2018a/)
 
 Team comprises of:
 
